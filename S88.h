@@ -13,7 +13,7 @@ COPYRIGHT (c) 2013-2020 Xavier Bouillard & Philippe Chavatte
 #ifdef USE_S88
 #include "Arduino.h"
 
-//#define USE_CDMRAIL            // to be defined if needed
+#define USE_CDMRAIL            // to be defined if needed
 
 #define S88_VERSION     "VERSION S88 library:   1.3.0"
 

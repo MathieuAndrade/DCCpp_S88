@@ -148,10 +148,12 @@ void TextCommand::parse(char *com){
       S88::parse(com+1);
       break;
 #endif
-
+      
+#ifdef DCCPP_PRINT_DCCPP
   case 'C':
       DCCpp::showConfiguration();
       break;
+#endif
 
 	case 't':
 		/**	\addtogroup commandsGroup
@@ -839,6 +841,11 @@ void TextCommand::parse(char *com){
 	  }
 	  DCCPP_INTERFACE.println("");
 	  break;
+
+	case 'p': 
+		DCCpp::pingSend = false;
+		DCCpp::pingTime = millis();
+		break;
 
   } // switch
 }; // SerialCommand::parse

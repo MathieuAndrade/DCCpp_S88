@@ -363,20 +363,21 @@ Main include file of the library.*/
 // The function DCCpp::printConfiguration()
 // is very heavy in program memory. So to avoid problems
 // you can make this function available by uncomment the next line, only when necessary.
-#define DCCPP_PRINT_DCCPP
+// #define DCCPP_PRINT_DCCPP
 
 //  Inclusion area
 //
 #define USE_EEPROM
-//#define USE_TURNOUT
+#define USE_TURNOUT
 //#define USE_SENSOR    // not compatible with USE_S88
-//#define USE_OUTPUT
+#define USE_OUTPUT
 #define USE_S88
 #define USE_TEXTCOMMAND
 //#define USE_ETHERNET_WIZNET_5100
 //#define USE_ETHERNET_WIZNET_5500
 //#define USE_ETHERNET_WIZNET_5200
 //#define USE_ETHERNET_ENC28J60
+//#define PING_MASTER
 
 #ifdef DOXYGEN_SPECIFIC
     // DO NOT CHANGE THESE LINES IN THIS BLOCK 'DOXYGEN_SPECIFIC' : Only here for documentation !

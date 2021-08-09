@@ -78,11 +78,15 @@ class DCCpp
 		static void writeCv(volatile RegisterList *inReg, int inCvId, byte inCvValue, int callBack = 100, int callBackSub = 200);
 		static int identifyLocoId(volatile RegisterList *inReg);
 		static void setFunctions(volatile RegisterList *inReg, int nReg, int inLocoId, FunctionsState &inStates);
+		static void stopAllThrottles();
 
 	public:
 		static volatile RegisterList mainRegs, progRegs;
 		static CurrentMonitor mainMonitor;
 		static CurrentMonitor progMonitor;
+		static bool pingSend;
+		static long pingTime;
+    static long pingTimeout;
 
 	public:
 		// begins

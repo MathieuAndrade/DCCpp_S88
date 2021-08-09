@@ -11,6 +11,8 @@ Part of DCC++ BASE STATION for the Arduino
 #include "CurrentMonitor.h"
 #include "Comm.h"
 
+long int eStopTimer = 0;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void CurrentMonitor::begin(int pin, const char *msg, float inSampleMax)
@@ -42,25 +44,40 @@ void CurrentMonitor::check()
         signalPin = DCCppConfig::SignalEnablePinMain;
 
     volatile bool powerState = (digitalRead(signalPin) == HIGH) ? true : false;
-    if (powerState && (digitalRead(EmergencyStop) == LOW)) { // low active
+    if (powerState && (analogRead(EmergencyStop) < 130)) { // low active
         DCCpp::powerOff();
         DCCPP_INTERFACE.println(F("Emergency Stop"));
-#if !defined(USE_ETHERNET)
-        DCCPP_INTERFACE.println("");
-#endif
+        DCCPP_INTERFACE.println(analogRead(EmergencyStop));
+        #if !defined(USE_ETHERNET)
+            DCCPP_INTERFACE.println("");
+        #endif
     }
 
 #ifdef E_BOOSTER_ENABLE
-    boolean eStop = (analogRead(E_BoosterIn) < 200) ? true : false; // low active, for Booster CDE
+    boolean eStop = (analogRead(E_BoosterIn) < 550) ? true : false; // low active, for Booster CDE
 
-  #ifdef DCCPP_DEBUG_MODE
-    if (eStop != eStop_mem) {
-        DCCPP_INTERFACE.print("eStop "); DCCPP_INTERFACE.print(eStop); DCCPP_INTERFACE.print("   "); DCCPP_INTERFACE.println(analogRead(E_BoosterIn));
-        DCCPP_INTERFACE.print("powerState "); DCCPP_INTERFACE.println(powerState);
+    #ifdef DCCPP_DEBUG_MODE
+        if (eStop != eStop_mem) {
+            DCCPP_INTERFACE.print("eStop "); DCCPP_INTERFACE.print(eStop); DCCPP_INTERFACE.print("   "); DCCPP_INTERFACE.println(analogRead(E_BoosterIn));
+            DCCPP_INTERFACE.print("powerState "); DCCPP_INTERFACE.println(powerState);
+        }
+    #endif
+
+    if (eStop) {
+        if (eStop_mem) {
+            if (millis() - eStopTimer < 50) {
+                eStop = (analogRead(E_BoosterIn) < 550) ? true : false;
+            } else {
+                goto finished;
+            }
+        } else {
+            eStop_mem = eStop;
+            eStopTimer = millis();
+            goto finished;
+        }
     }
-  #endif
 
-    if (eStop && powerState && !eStop_mem) {
+    if (eStop && powerState && eStop_mem) {
         DCCpp::panicStop(eStop);
         DCCPP_INTERFACE.print(F("E_Booster OFF"));
 
@@ -77,7 +94,9 @@ void CurrentMonitor::check()
         DCCPP_INTERFACE.println("");
     #endif
     }
+    
     eStop_mem = eStop;
+    finished:
 #endif
 
     // current overload and Programming Signal is on (or could have checked Main Signal, since both are always on or off together)

@@ -44,6 +44,7 @@ struct RegisterList{
   byte currentBit;
   byte nRepeat;
   int *speedTable;
+  int *addrTable;
   static byte idlePacket[];
   static byte resetPacket[];
   static byte bitMask[];

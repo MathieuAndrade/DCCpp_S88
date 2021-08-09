@@ -47,7 +47,7 @@ struct CurrentMonitor{
 
 #define EmergencyStop A5
 
-// #define E_BOOSTER_ENABLE true // uncomment these 2 lines to use with a CDE booster
-// #define E_BoosterIn      A7
+#define E_BOOSTER_ENABLE true // uncomment these 2 lines to use with a CDE booster
+#define E_BoosterIn      A7
 
 #endif

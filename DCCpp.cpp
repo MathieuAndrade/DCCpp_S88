@@ -84,6 +84,9 @@ void FunctionsState::printActivated()
 // *********************************************************** DCCpp class
 
 static bool first = true;
+bool DCCpp::pingSend = false;
+long DCCpp::pingTime = 0;
+long DCCpp::pingTimeout = 4000;
 
 ///////////////////////////////////////////////////////////////////////////////
 // MAIN ARDUINO LOOP
@@ -109,17 +112,27 @@ void DCCpp::loop()
     progMonitor.check();
   }
 
-#ifdef USE_S88
-  if (S88::checkTime())
-  {      // if sufficient time has elapsed since last update, scan 8 S88 sensors in a row
-    S88::check();
-  }
-#endif
+  #ifdef USE_S88
+    if (S88::checkTime()) {  // if sufficient time has elapsed since last update, scan 8 S88 sensors in a row
+      S88::check();
+    }
+  #endif
 
-#ifdef USE_SENSOR
-    Sensor::check();    // check sensors for activated or not
-#endif
+  #ifdef USE_SENSOR
+    Sensor::check();  // check sensors for activated or not
+  #endif
 
+  #ifdef PING_MASTER
+    if(powerOn) {
+      if (DCCpp::pingSend == true && millis() - DCCpp::pingTime > DCCpp::pingTimeout && DCCpp::panicStopped == false) {
+        DCCpp::panicStop(true);
+      } else if (DCCpp::pingSend == false && millis() - DCCpp::pingTime > DCCpp::pingTimeout && DCCpp::panicStopped == false) {
+        DCCPP_INTERFACE.println("<pa>");
+        DCCpp::pingTime = millis();
+        DCCpp::pingSend = true;
+      }
+    }
+  #endif
 }
 
 void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
@@ -444,6 +457,7 @@ ISR(TIMER3_COMPB_vect) {               // set interrupt service for OCR3B of TIM
 
 #endif
 
+#ifdef DCCPP_PRINT_DCCPP
 ///////////////////////////////////////////////////////////////////////////////
 // PRINT CONFIGURATION INFO TO SERIAL PORT REGARDLESS OF INTERFACE TYPE
 // - ACTIVATED ON STARTUP IF SHOW_CONFIG_PIN IS TIED HIGH
@@ -564,6 +578,7 @@ void DCCpp::showConfiguration()
 //  while (true);
 //      Serial.println("");
 }
+#endif
 
 void DCCpp::panicStop(bool inStop)
 {
@@ -582,13 +597,20 @@ void DCCpp::panicStop(bool inStop)
         powerOn();
 }
 
-void DCCpp::powerOn()
-{
-    if (DCCppConfig::SignalEnablePinProg != UNDEFINED_PIN)
-        digitalWrite(DCCppConfig::SignalEnablePinProg, HIGH);
-    if (DCCppConfig::SignalEnablePinMain != UNDEFINED_PIN)
-        digitalWrite(DCCppConfig::SignalEnablePinMain, HIGH);
-    DCCPP_INTERFACE.print("<p1>");
+void DCCpp::powerOn() {
+  if (DCCppConfig::SignalEnablePinProg != UNDEFINED_PIN)
+    digitalWrite(DCCppConfig::SignalEnablePinProg, HIGH);
+
+  if (DCCppConfig::SignalEnablePinMain != UNDEFINED_PIN) {
+    digitalWrite(DCCppConfig::SignalEnablePinMain, HIGH);
+  }
+
+  DCCPP_INTERFACE.print("<p1>");
+
+  DCCpp::pingSend = false;
+  DCCpp::pingTime = millis();
+  DCCpp::panicStopped = false;
+
 #if !defined(USE_ETHERNET)
     DCCPP_INTERFACE.println("");
 #endif
@@ -604,6 +626,8 @@ void DCCpp::powerOff()
 #if !defined(USE_ETHERNET)
     DCCPP_INTERFACE.println("");
 #endif
+
+  stopAllThrottles();
 }
 
 /***************************** Driving functions */
@@ -633,8 +657,16 @@ bool DCCpp::setThrottle(volatile RegisterList *inpRegs, int nReg,  int inLocoId,
     return true;
 }
 
-void DCCpp::setFunctions(volatile RegisterList *inpRegs, int nReg, int inLocoId, FunctionsState &inStates)
-{
+void DCCpp::stopAllThrottles() {
+  for (int i = 0; i <= MAX_MAIN_REGISTERS; i++) {
+    if (DCCpp::mainRegs.speedTable[i] == 0)
+      continue;
+
+    DCCpp::mainRegs.setThrottle(i, DCCpp::mainRegs.addrTable[i], 0, 0);
+  }
+}
+
+void DCCpp::setFunctions(volatile RegisterList *inpRegs, int nReg, int inLocoId, FunctionsState &inStates) {
 #ifdef DCCPP_DEBUG_MODE
     if (inpRegs == &mainRegs)
     {

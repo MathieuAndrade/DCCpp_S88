@@ -45,6 +45,7 @@ RegisterList::RegisterList(int maxNumRegs){
     reg[i].initPackets();
   regMap=(Register **)calloc((maxNumRegs+1),sizeof(Register *));
   speedTable=(int *)calloc((maxNumRegs+1),sizeof(int *));
+  addrTable=(int *)calloc((maxNumRegs+1),sizeof(int *));
   currentReg=reg;
   regMap[0]=reg;
   maxLoadedReg=reg;
@@ -152,6 +153,7 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 #endif
 #endif
 	speedTable[nReg] = tDirection == 1 ? tSpeed : -tSpeed;
+	addrTable[nReg] = cab;
 
 } // RegisterList::setThrottle(ints)
 
