@@ -842,7 +842,7 @@ void TextCommand::parse(char *com){
 	  DCCPP_INTERFACE.println("");
 	  break;
 
-	case 'p': 
+	case 'g': 
 		DCCpp::pingSend = false;
 		DCCpp::pingTime = millis();
 		break;

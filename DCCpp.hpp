@@ -86,7 +86,7 @@ class DCCpp
 		static CurrentMonitor progMonitor;
 		static bool pingSend;
 		static long pingTime;
-    static long pingTimeout;
+    	static long pingTimeout;
 
 	public:
 		// begins

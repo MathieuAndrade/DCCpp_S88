@@ -127,7 +127,7 @@ void DCCpp::loop()
       if (DCCpp::pingSend == true && millis() - DCCpp::pingTime > DCCpp::pingTimeout && DCCpp::panicStopped == false) {
         DCCpp::panicStop(true);
       } else if (DCCpp::pingSend == false && millis() - DCCpp::pingTime > DCCpp::pingTimeout && DCCpp::panicStopped == false) {
-        DCCPP_INTERFACE.println("<pa>");
+        DCCPP_INTERFACE.println("<g1>");
         DCCpp::pingTime = millis();
         DCCpp::pingSend = true;
       }

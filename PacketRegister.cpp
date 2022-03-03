@@ -139,6 +139,20 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 		tSpeed = 0;
 	}
 
+	// Find if the locomotive address is already registered
+	// If its address already exists in the table
+	// use its registry number instead of the one provided
+	// This is useful when several programs are controlling the
+	// same machine but with a different register
+	// This allows the different programs to synchronize 
+	// the registry number easily
+	for (int i = 0; i <= MAX_MAIN_REGISTERS; i++) {
+		if (DCCpp::mainRegs.addrTable[i] == cab) {
+			nReg = i;
+			break;
+		}
+	}
+
 	loadPacket(nReg, b, nB, 0, 1);
 
 #if defined(USE_TEXTCOMMAND)

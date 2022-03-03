@@ -102,7 +102,7 @@ void CurrentMonitor::check()
     // current overload and Programming Signal is on (or could have checked Main Signal, since both are always on or off together)
     if (this->current > this->currentSampleMax && digitalRead(this->signalPin) == HIGH)
     {
-        DCCpp::powerOff();
+        //DCCpp::powerOff();
         String origin;
         switch(this->pin) {
           case 54:
