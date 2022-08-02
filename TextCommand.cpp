@@ -266,6 +266,32 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCpp::mainRegs.setAccessory(com + 1);
     break;
 
+  case 'X':
+    /**    \addtogroup commandsGroup
+    OPERATE STATIONARY EXTENDED ACCESSORY DECODERS
+    -------------------------------------
+
+    <b>
+    \verbatim
+    <X ADDRESS VALUE>
+    \endverbatim
+    </b>
+
+    sets an accessory (stationary) decoder with VALUE
+
+    - <b>ADDRESS</b>:  the primary address of the decoder (0-2044)
+    - <b>VALUE</b>: the value of the decoder (0-31) but holds 0.255
+
+    However, this general command simply sends the appropriate DCC instruction packet to the main tracks
+    to operate connected accessories. It does not store or retain any information regarding the current
+    status of that accessory.
+
+    returns: NONE
+    */
+
+    DCCpp::mainRegs.setExtendedAccessory(com + 1);
+    break;
+
 #ifdef USE_TURNOUT
   case 'T':
     /*

@@ -294,6 +294,33 @@ void RegisterList::setAccessory(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void RegisterList::setExtendedAccessory(int aAdd, int val) volatile {
+  byte b[4]; // save space for checksum byte
+
+  b[0] = (aAdd >> 2) % 64 | B10000000;                  // first byte is of the form 10AAAAAA, where AAAAAA represent 6 of the 8 least significant bits of accessory address
+  b[1] = (~(aAdd >> 4) & 0x70) | ((aAdd % 4) << 1) | 1; // second byte is of the form 0AAA0AA1, with AAA inverted Msb and AA Lsb
+  b[2] = val;                                           // third byte is of the form 000XXXXX, where X should be 0..31 but byte holds 0..255
+
+  loadPacket(0, b, 3, 4, 1);
+
+} // RegisterList::setExtendedAccessory(ints)
+
+#ifdef USE_TEXTCOMMAND
+void RegisterList::setExtendedAccessory(char *s) volatile {
+  int aAdd; // the accessory address (1-2044 = 11 bits)
+  byte val; // the accessory value for that address (0-31) following NMRA recommended convention, but byte holds 0..255
+
+  if (sscanf(s, "%d %d", &aAdd, &val) != 2) {
+#ifdef DCCPP_DEBUG_MODE
+    Serial.println(F("a Syntax error"));
+#endif
+    return;
+  }
+}
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+
 void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile {
 
   if (nBytes < 2 || nBytes > 5) { // invalid valid packet

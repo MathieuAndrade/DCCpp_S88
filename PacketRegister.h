@@ -55,6 +55,7 @@ struct RegisterList {
   void setThrottle(char *) volatile;
   void setFunction(char *) volatile;
   void setAccessory(char *) volatile;
+  void setExtendedAccessory(char *) volatile;
   void writeTextPacket(char *) volatile;
 #endif
 
@@ -73,6 +74,7 @@ struct RegisterList {
   void setThrottle(int nReg, int cab, int tSpeed, int tDirection) volatile;
   void setFunction(int nReg, int cab, int fByte, int eByte) volatile;
   void setAccessory(int aAdd, int aNum, int activate) volatile;
+  void setExtendedAccessory(int aAdd, int aNum) volatile;
   void writeTextPacket(int nReg, byte *b, int nBytes) volatile;
   int readCV(int cv, int callBack, int callBackSub) volatile;
   int readCVmain(int cv, int callBack, int callBackSub) volatile;
