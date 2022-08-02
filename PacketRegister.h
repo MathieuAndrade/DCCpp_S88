@@ -14,33 +14,33 @@ Part of DCC++ BASE STATION for the Arduino
 
 // Define constants used for reading CVs from the Programming Track
 
-#define  ACK_BASE_COUNT            100      /**< Number of analogRead samples to take before each CV verify to establish a baseline current.*/
-#define  ACK_SAMPLE_COUNT          500      /**< Number of analogRead samples to take when monitoring current after a CV verify (bit or byte) has been sent.*/ 
-#define  ACK_SAMPLE_SMOOTHING      0.2      /**< Exponential smoothing to use in processing the analogRead samples after a CV verify (bit or byte) has been sent.*/
-#define  ACK_SAMPLE_THRESHOLD       30      /**< The threshold that the exponentially-smoothed analogRead samples (after subtracting the baseline current) must cross to establish ACKNOWLEDGEMENT.*/
+#define ACK_BASE_COUNT 100       /**< Number of analogRead samples to take before each CV verify to establish a baseline current.*/
+#define ACK_SAMPLE_COUNT 500     /**< Number of analogRead samples to take when monitoring current after a CV verify (bit or byte) has been sent.*/
+#define ACK_SAMPLE_SMOOTHING 0.2 /**< Exponential smoothing to use in processing the analogRead samples after a CV verify (bit or byte) has been sent.*/
+#define ACK_SAMPLE_THRESHOLD 30  /**< The threshold that the exponentially-smoothed analogRead samples (after subtracting the baseline current) must cross to establish ACKNOWLEDGEMENT.*/
 
-struct Packet{
+struct Packet {
   byte buf[10];
   byte nBits;
 }; // Packet
 
-struct Register{
+struct Register {
   Packet packet[2];
   Packet *activePacket;
   Packet *updatePacket;
   void initPackets();
 }; // Register
-  
+
 /** Define a series of registers that can be sequentially accessed over a loop to generate a repeating series of DCC Packets.
  */
-struct RegisterList{
+struct RegisterList {
   int maxNumRegs;
   Register *reg;
   Register **regMap;
   Register *currentReg;
   Register *maxLoadedReg;
   Register *nextReg;
-  Packet  *tempPacket;
+  Packet *tempPacket;
   byte currentBit;
   byte nRepeat;
   int *speedTable;
@@ -49,7 +49,7 @@ struct RegisterList{
   static byte resetPacket[];
   static byte bitMask[];
   RegisterList(int);
-  void loadPacket(int, byte *, int, int, int=0) volatile;
+  void loadPacket(int, byte *, int, int, int = 0) volatile;
 
 #ifdef USE_TEXTCOMMAND
   void setThrottle(char *) volatile;
