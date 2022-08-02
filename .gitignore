@@ -31,4 +31,6 @@
 *.out
 *.app
 
+# IDE folders
 .idea
+.vscode
