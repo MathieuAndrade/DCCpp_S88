@@ -267,13 +267,8 @@ void RegisterList::setAccessory(char *s) volatile {
 
   this->setAccessory(aAdd, aNum, activate);
 
-  Serial.print(F("<A "));
-  Serial.print(aAdd);
-  Serial.print(F(" / "));
-  Serial.print(aNum);
-  Serial.print(F(" : "));
-  Serial.print(activate);
-  Serial.println(">");
+  answerString = "<A " + String(aAdd) + " / " + String(aNum) + " : " + String(activate) + ">";
+  DCCPP_INTERFACE.println((const String &)answerString);
 
 } // RegisterList::setAccessory(string)
 
@@ -303,7 +298,14 @@ void RegisterList::setExtendedAccessory(char *s) volatile {
 #endif
     return;
   }
-}
+
+  this->setExtendedAccessory(aAdd, val);
+
+  answerString = "<x " + String(aAdd) + " : " + String(val) + ">";
+  DCCPP_INTERFACE.println((const String &)answerString);
+
+} // RegisterList::setExtendedAccessory(string)
+
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
