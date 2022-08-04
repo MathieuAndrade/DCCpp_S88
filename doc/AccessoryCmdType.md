@@ -1,6 +1,6 @@
 # Les différents types de commande d'accessoires
 
-Les centrales DCC possède plusieurs types de commande d'accessoires, la plus couramant utilisée est la commande T (pour turnout).
+Les centrales DCC Arduino possède plusieurs types de commande d'accessoires, la plus couramant utilisée est la commande T (pour turnout).
 
 ## La commande turnout (dite T)
 La commande "T" est très souvent utilisée pour commander les aiguillages de façon indépendante des autres accessoires. C'est-à-dire que la centrale ne considére pas les aiguillages comme de simples accessoires et qu'elle utilise une commande différente pour les autres types d'accessoires (feux de signalisation par exemple).
