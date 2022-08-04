@@ -1,4 +1,4 @@
-# Les différents type de commande d'accéssoires
+# Les différents types de commande d'accessoires
 
 Les centrales DCC possède plusieurs types de commande d'accessoires, la plus couramant utilisée est la commande T (pour turnout).
 
@@ -17,7 +17,7 @@ Nous conseillons donc d'utiliser la commande X sur votre réseau afin de bénéf
 La centrale DCCpp_S88 disponible à [cette adresse](https://github.com/MathieuAndrade/DCCpp_S88)
   est la plus évoluée (au moment où ces lignes sont écrites) et est maintenue à jour par plusieurs personnes, nous conseillons donc de l'utiliser afin d'avoir le plus de comptabilité possible avec vos logiciels (les logiciels CDM-Rail et JMRI sont pleinement compatibles avec celle-ci).
 
-## :warning: Points a prendre en compte
+## :warning: Points à prendre en compte
 Attention il peut arriver dans certaines centrales que la commande T désactive complètement la commande d'accessoire simple.
 
 Comme la commande "T" est la plus couramment utilisée, le logiciel CDM-Rail utilisera cette commande par défaut, mais cela implique la désactivation complète des commandes d'accessoires. CDM-Rail sera donc incapable de piloter d'autres accessoires (comme des feux de signalisation) que des aiguillages si vous décidez d'utiliser la commande "T".
