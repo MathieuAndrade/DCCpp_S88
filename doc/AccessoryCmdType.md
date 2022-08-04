@@ -14,8 +14,7 @@ La commande "X" dite "accessoires étendu" est la plus simple et la plus flexibl
 ## :white_check_mark: Conclusion
 Nous conseillons donc d'utiliser la commande X sur votre réseau afin de bénéficier de la plus grande flexibilité possible dans la mesure où votre centrale est compatible.
 
-La centrale DCCpp_S88 disponible à [cette adresse](https://github.com/MathieuAndrade/DCCpp_S88)
-  est la plus évoluée (au moment où ces lignes sont écrites) et est maintenue à jour par plusieurs personnes, nous conseillons donc de l'utiliser afin d'avoir le plus de comptabilité possible avec vos logiciels (les logiciels CDM-Rail et JMRI sont pleinement compatibles avec celle-ci).
+La centrale DCCpp_S88 disponible à [cette adresse](https://github.com/MathieuAndrade/DCCpp_S88) est la plus évoluée (au moment où ces lignes sont écrites) et est maintenue à jour par plusieurs personnes, elle possède les trois types de commande décrite ci-dessus, nous conseillons donc de l'utiliser afin d'avoir le plus de comptabilité possible avec vos logiciels (les logiciels CDM-Rail et JMRI sont pleinement compatibles avec celle-ci).
 
 ## :warning: Points à prendre en compte
 Attention il peut arriver dans certaines centrales que la commande T désactive complètement la commande d'accessoire simple.
