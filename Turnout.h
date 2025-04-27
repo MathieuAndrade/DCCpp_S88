@@ -164,13 +164,6 @@ struct Turnout
 	*/
 	static int count();
 
-#ifdef DCCPP_PRINT_DCCPP
-	/** Show the content of all the turnouts.
-	@remark Only available when DCCPP_PRINT_DCCPP is defined.
-	*/
-	static void show();
-#endif
-
 #endif
 
 #if defined(USE_TEXTCOMMAND)

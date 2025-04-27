@@ -115,11 +115,6 @@ void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int pr
   this->nRepeat = nRepeat;
   maxLoadedReg = max(maxLoadedReg, nextReg);
 
-#ifdef DCCPP_DEBUG_VERBOSE_MODE
-  if (printFlag) // for debugging purposes
-    printPacket(nReg, b, nBytes, nRepeat);
-#endif
-
 } // RegisterList::loadPacket
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,9 +174,6 @@ void RegisterList::setThrottle(char *s) volatile
 
   if (sscanf(s, "%d %d %d %d", &nReg, &cab, &tSpeed, &tDirection) != 4)
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("t Syntax error"));
-#endif
     return;
   }
 
@@ -233,9 +225,6 @@ void RegisterList::setFunction(char *s) volatile
   nParams = sscanf(s, "%d %d %d", &cab, &fByte, &eByte);
   if (nParams < 2)
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("f Syntax error"));
-#endif
     return;
   }
 
@@ -269,9 +258,6 @@ void RegisterList::setAccessory(char *s) volatile
 
   if (sscanf(s, "%d %d %d", &aAdd, &aNum, &activate) != 3)
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("a Syntax error"));
-#endif
     return;
   }
 
@@ -306,9 +292,6 @@ void RegisterList::setExtendedAccessory(char *s) volatile
 
   if (sscanf(s, "%d %d", &aAdd, &val) != 2)
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("a Syntax error"));
-#endif
     return;
   }
 
@@ -448,9 +431,6 @@ int RegisterList::readCV(char *s) volatile
 
   if (sscanf(s, "%d %d %d", &cv, &callBack, &callBackSub) != 3) // cv = 1-1024
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("R Syntax error"));
-#endif
     return -1;
   }
 
@@ -471,9 +451,6 @@ int RegisterList::readCVmain(char *s) volatile
 
   if (sscanf(s, "%d %d %d", &cv, &callBack, &callBackSub) != 3) // cv = 1-1024
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("r Syntax error"));
-#endif
     return -1;
   }
 
@@ -540,9 +517,6 @@ void RegisterList::writeCVByte(char *s) volatile
 
   if (sscanf(s, "%d %d %d %d", &cv, &bValue, &callBack, &callBackSub) != 4) // cv = 1-1024
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("W Syntax error"));
-#endif
     return;
   }
 
@@ -611,9 +585,6 @@ void RegisterList::writeCVBit(char *s) volatile
 
   if (sscanf(s, "%d %d %d %d %d", &cv, &bNum, &bValue, &callBack, &callBackSub) != 5) // cv = 1-1024
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("W Syntax error"));
-#endif
     return;
   }
 
@@ -651,9 +622,6 @@ void RegisterList::writeCVByteMain(char *s) volatile
 
   if (sscanf(s, "%d %d %d", &cab, &cv, &bValue) != 3)
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("w Syntax error"));
-#endif
     return;
   }
 
@@ -695,31 +663,11 @@ void RegisterList::writeCVBitMain(char *s) volatile
 
   if (sscanf(s, "%d %d %d %d", &cab, &cv, &bNum, &bValue) != 4)
   {
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("w Syntax error"));
-#endif
     return;
   }
 
   this->writeCVBitMain(cab, cv, bNum, bValue);
 } // RegisterList::writeCVBitMain(string)
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef DCCPP_DEBUG_MODE
-void RegisterList::printPacket(int nReg, byte *b, int nBytes, int nRepeat) volatile
-{
-  answerString = "<*" + String(nReg) + ":";
-
-  for (int i = 0; i < nBytes; i++)
-  {
-    answerString += " " + String(b[i], HEX);
-  }
-
-  answerString += " / " + String(nRepeat) + ">";
-  DCCPP_INTERFACE.print((const String &)answerString);
-} // RegisterList::printPacket()
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

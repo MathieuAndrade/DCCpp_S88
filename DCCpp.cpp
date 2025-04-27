@@ -63,22 +63,6 @@ void FunctionsState::statesSent()
         this->activeFlagsSent[i] = this->activeFlags[i];
 }
 
-#ifdef DCCPP_DEBUG_MODE
-void FunctionsState::printActivated()
-{
-    for (int i = 0; i < 32; i++)
-    {
-        if (this->isActivated(i))
-        {
-            Serial.print(i);
-            Serial.print(" ");
-        }
-    }
-
-    Serial.println("");
-}
-#endif
-
 // *********************************************************** end of FunctionsState
 
 // *********************************************************** DCCpp class
@@ -101,9 +85,6 @@ void DCCpp::loop()
     if (first)
     {
         first = false;
-#if defined(DCCPP_DEBUG_MODE) || defined(DCCPP_PRINT_DCCPP)
-        showConfiguration();
-#endif
     }
 
     if (CurrentMonitor::checkTime())
@@ -145,9 +126,6 @@ void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
     // If no main line, exit.
     if (DCCppConfig::SignalEnablePinMain == UNDEFINED_PIN)
     {
-#ifdef DCCPP_DEBUG_MODE
-        Serial.println("No main track");
-#endif
         return;
     }
 
@@ -195,10 +173,6 @@ void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
     bitSet(TIMSK1, OCIE1B); // enable interrupt vector for Timer 1 Output Compare B Match (OCR1B)
     digitalWrite(DCCppConfig::SignalEnablePinMain, LOW);
-
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("beginMain achieved"));
-#endif
 }
 
 void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
@@ -210,9 +184,6 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
     // If no programming line, exit.
     if (DCCppConfig::SignalEnablePinProg == UNDEFINED_PIN)
     {
-#ifdef DCCPP_DEBUG_MODE
-        Serial.println("No prog track");
-#endif
         return;
     }
 
@@ -306,10 +277,6 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
 #endif
     digitalWrite(DCCppConfig::SignalEnablePinProg, LOW);
-
-#ifdef DCCPP_DEBUG_MODE
-    Serial.println(F("beginProg achieved"));
-#endif
 }
 
 void DCCpp::begin()
@@ -328,16 +295,6 @@ void DCCpp::begin()
 
     mainMonitor.begin(UNDEFINED_PIN, "");
     progMonitor.begin(UNDEFINED_PIN, "");
-
-#ifdef SDCARD_CS
-    pinMode(SDCARD_CS, OUTPUT);
-    digitalWrite(SDCARD_CS, HIGH); // De-select the SD card
-#endif
-
-#ifdef DCCPP_DEBUG_MODE
-    // pinMode(LED_BUILTIN, OUTPUT);
-    Serial.println(F("begin achieved"));
-#endif
 
 } // begin
 
@@ -430,102 +387,9 @@ ISR(TIMER3_COMPB_vect)
 
 #endif
 
-#ifdef DCCPP_PRINT_DCCPP
-///////////////////////////////////////////////////////////////////////////////
-// PRINT CONFIGURATION INFO TO SERIAL PORT REGARDLESS OF INTERFACE TYPE
-// - ACTIVATED ON STARTUP IF SHOW_CONFIG_PIN IS TIED HIGH
-
-void DCCpp::showConfiguration()
-{
-    delay(1000);
-    Serial.println(F("*** DCCpp LIBRARY ***"));
-
-    Serial.print(F("VERSION DCC++:         "));
-    Serial.println(VERSION);
-    Serial.println(F(LIBRARY_VERSION));
-    Serial.println(F(S88_VERSION));
-    Serial.print(F("COMPILED:  "));
-    Serial.print(__DATE__);
-    Serial.print(F(" "));
-    Serial.println(__TIME__);
-
-    // Serial.print(F("\nARDUINO:      "));
-    // Serial.print(ARDUINO_TYPE);
-
-    // Serial.print(F("\n\nMOTOR SHIELD: "));
-    // Serial.print(MOTOR_SHIELD_NAME);
-
-    if (DCCppConfig::SignalEnablePinMain != UNDEFINED_PIN)
-    {
-        Serial.print(F("\nDCC SIG MAIN(DIR): "));
-        Serial.println(DCC_SIGNAL_PIN_MAIN);
-        Serial.print(F("   DIRECTION: "));
-        Serial.println(DCCppConfig::DirectionMotorA);
-        Serial.print(F("   ENABLE(PWM): "));
-        Serial.println(DCCppConfig::SignalEnablePinMain);
-        Serial.print(F("   CURRENT: "));
-        byte npin = DCCppConfig::CurrentMonitorMain;
-        if (npin > 53 && npin < 71)
-        {
-            byte i = npin - 54;
-            Serial.println(String(npin) + "/A" + String(i));
-        }
-        else
-            Serial.println(DCCppConfig::CurrentMonitorMain);
-    }
-    delay(1000);
-    if (DCCppConfig::SignalEnablePinProg != UNDEFINED_PIN)
-    {
-        Serial.print(F("\nDCC SIG PROG(DIR): "));
-        Serial.println(DCC_SIGNAL_PIN_PROG);
-        Serial.print(F("   DIRECTION: "));
-        Serial.println(DCCppConfig::DirectionMotorB);
-        Serial.print(F("   ENABLE(PWM): "));
-        Serial.println(DCCppConfig::SignalEnablePinProg);
-        Serial.print(F("   CURRENT: "));
-        byte npin = DCCppConfig::CurrentMonitorProg;
-        if (npin > 53 && npin < 71)
-        {
-            byte i = npin - 54;
-            Serial.println(String(npin) + "/A" + String(i));
-        }
-        else
-            Serial.println(DCCppConfig::CurrentMonitorProg);
-    }
-
-#if defined(USE_S88)
-    Serial.print(F("\nS88_Clock_PIN:   "));
-    Serial.println(S88_Clock_PIN);
-    Serial.print(F("S88_Load_PS_PIN: "));
-    Serial.println(S88_LOAD_PS_PIN);
-    Serial.print(F("S88_Reset_PIN:   "));
-    Serial.println(S88_Reset_PIN);
-    Serial.print(F("S88_DataL_PIN:   "));
-    Serial.println(S88_DataL_PIN);
-    Serial.print(F("S88_DataR_PIN:   "));
-    Serial.println(S88_DataR_PIN);
-#endif
-
-#ifdef USE_TEXTCOMMAND
-    Serial.print(F("\nINTERFACE: "));
-    Serial.println(F("SERIAL"));
-
-#endif
-    Serial.println(F("DCCppS88 ready"));
-
-    //  while (true);
-    //      Serial.println("");
-}
-#endif
-
 void DCCpp::panicStop(bool inStop)
 {
     panicStopped = inStop;
-
-#ifdef DCCPP_DEBUG_MODE
-    Serial.print(F("DCCpp PanicStop "));
-    Serial.println(inStop ? F("pressed") : F("canceled"));
-#endif
 
     /* activate or not the power on rails */
 
@@ -574,16 +438,6 @@ bool DCCpp::setThrottle(volatile RegisterList *inpRegs, int nReg, int inLocoId, 
     else if (inNewSpeed > 0)
         val = map(inNewSpeed, 0, inStepsNumber, 2, 127);
 
-#ifdef DCCPP_DEBUG_MODE
-    Serial.print(F("DCCpp SetSpeed "));
-    Serial.print(inForward ? inNewSpeed : -inNewSpeed);
-    Serial.print(F("/"));
-    Serial.print(inStepsNumber);
-    Serial.print(F(" (in Dcc "));
-    Serial.print(val);
-    Serial.println(F(" )"));
-#endif
-
     inpRegs->setThrottle(nReg, inLocoId, val, inForward);
 
     return true;
@@ -602,18 +456,6 @@ void DCCpp::stopAllThrottles()
 
 void DCCpp::setFunctions(volatile RegisterList *inpRegs, int nReg, int inLocoId, FunctionsState &inStates)
 {
-#ifdef DCCPP_DEBUG_MODE
-    if (inpRegs == &mainRegs)
-    {
-        if (nReg > MAX_MAIN_REGISTERS)
-            Serial.println(F("Invalid register number on main track."));
-    }
-    else
-    {
-        if (nReg > MAX_PROG_REGISTERS)
-            Serial.println(F("Invalid register number on programming track."));
-    }
-#endif
     byte flags = 0;
 
     byte oneByte1 = 128;   // Group one functions F0-F4
@@ -713,13 +555,6 @@ void DCCpp::setFunctions(volatile RegisterList *inpRegs, int nReg, int inLocoId,
         inpRegs->setFunction(nReg, inLocoId, 223, fiveByte2);
 
     inStates.statesSent();
-
-#ifdef DCCPP_DEBUG_MODE
-    Serial.print(F("DCCpp SetFunctions for loco"));
-    Serial.print(inLocoId);
-    Serial.print(" / Activated : ");
-    inStates.printActivated();
-#endif
 }
 
 int DCCpp::identifyLocoId(volatile RegisterList *inReg)
@@ -751,25 +586,9 @@ int DCCpp::identifyLocoId(volatile RegisterList *inReg)
 void DCCpp::writeCv(volatile RegisterList *inReg, int inCv, byte inValue, int callBack, int callBackSub)
 {
     inReg->writeCVByte(inCv, inValue, callBack, callBackSub);
-
-#ifdef DCCPP_DEBUG_MODE
-    Serial.print(F("DCCpp WriteCv "));
-    Serial.print(inCv);
-    Serial.print(F(" : "));
-    Serial.println(inValue);
-#endif
 }
 
 void DCCpp::setAccessory(int inAddress, byte inSubAddress, byte inActivate)
 {
     mainRegs.setAccessory(inAddress, inSubAddress, inActivate);
-
-#ifdef DCCPP_DEBUG_MODE
-    Serial.print(F("DCCpp AccessoryOperation "));
-    Serial.print(inAddress);
-    Serial.print(F(" / "));
-    Serial.print(inSubAddress);
-    Serial.print(F(" : "));
-    Serial.println(inActivate);
-#endif
 }

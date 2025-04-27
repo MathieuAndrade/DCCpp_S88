@@ -19,12 +19,14 @@ Part of DCC++ BASE STATION for the Arduino
 #define ACK_SAMPLE_SMOOTHING 0.2 /**< Exponential smoothing to use in processing the analogRead samples after a CV verify (bit or byte) has been sent.*/
 #define ACK_SAMPLE_THRESHOLD 30  /**< The threshold that the exponentially-smoothed analogRead samples (after subtracting the baseline current) must cross to establish ACKNOWLEDGEMENT.*/
 
-struct Packet {
+struct Packet
+{
   byte buf[10];
   byte nBits;
 }; // Packet
 
-struct Register {
+struct Register
+{
   Packet packet[2];
   Packet *activePacket;
   Packet *updatePacket;
@@ -33,7 +35,8 @@ struct Register {
 
 /** Define a series of registers that can be sequentially accessed over a loop to generate a repeating series of DCC Packets.
  */
-struct RegisterList {
+struct RegisterList
+{
   int maxNumRegs;
   Register *reg;
   Register **regMap;
@@ -83,10 +86,6 @@ struct RegisterList {
   void writeCVBit(int cv, int bNum, int bValue, int callBack, int callBackSub) volatile;
   void writeCVByteMain(int cab, int cv, int bvalue) volatile;
   void writeCVBitMain(int cab, int cv, int bNum, int bValue) volatile;
-
-#ifdef DCCPP_DEBUG_MODE
-  void printPacket(int, byte *, int, int) volatile;
-#endif
 };
 
 #endif

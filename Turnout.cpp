@@ -24,12 +24,6 @@ Part of DCC++ BASE STATION for the Arduino
 void Turnout::begin(int id, int add, int subAdd)
 {
 #if defined(USE_TEXTCOMMAND)
-#if defined(DCCPP_DEBUG_MODE)
-	if (strncmp(EEStore::data.id, EESTORE_ID, sizeof(EESTORE_ID)) != 0)
-	{ // check to see that eeStore contains valid DCC++ ID
-		DCCPP_INTERFACE.println(F("Turnout::begin() must be called BEFORE DCCpp.begin() !"));
-	}
-#endif
 	if (firstTurnout == NULL)
 	{
 		firstTurnout = this;
@@ -234,35 +228,6 @@ Turnout *Turnout::create(int id, int add, int subAdd)
 #endif // USE_TEXTCOMMAND
 
 #if defined(USE_TEXTCOMMAND)
-#ifdef DCCPP_PRINT_DCCPP
-
-///////////////////////////////////////////////////////////////////////////////
-
-void Turnout::show()
-{
-	Turnout *tt;
-
-	if (firstTurnout == NULL)
-	{
-		DCCPP_INTERFACE.print("<Xt>");
-		return;
-	}
-
-	for (tt = firstTurnout; tt != NULL; tt = tt->nextTurnout)
-	{
-		DCCPP_INTERFACE.print("<H");
-		DCCPP_INTERFACE.print(tt->data.id);
-		DCCPP_INTERFACE.print(" ");
-		DCCPP_INTERFACE.print(tt->data.address);
-		DCCPP_INTERFACE.print(" ");
-		DCCPP_INTERFACE.print(tt->data.subAddress);
-		if (tt->data.tStatus == 0)
-			DCCPP_INTERFACE.print(" 0>");
-		else
-			DCCPP_INTERFACE.print(" 1>");
-	}
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 

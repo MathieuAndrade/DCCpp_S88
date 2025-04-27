@@ -54,13 +54,6 @@ public:
 	@return True if the given function activation flag is different between activFlags and sentActiveFlags.
 	*/
 	bool isActivationChanged(byte inFunctionNumber);
-
-#ifdef DCCPP_DEBUG_MODE
-	/** Print the list of activated functions.
-	@remark Only available if DCCPP_DEBUG_MODE is defined.
-	*/
-	void printActivated();
-#endif
 };
 
 /**
@@ -242,18 +235,6 @@ public:
 	@param inActivate	True to activate the accessory, false to deactivate.
 	*/
 	static void setAccessory(int inAddress, byte inSubAddress, byte inActivate);
-
-public:
-#ifdef DCCPP_PRINT_DCCPP
-/** This define is empty if DCCPP_PRINT_DCCPP is not defined. */
-#define PRINT_DCCPP DCCpp::showConfiguration();
-	/** Print the list of activated functions.
-	@remark Only available if DCCPP_PRINT_DCCPP is defined.
-	*/
-	static void showConfiguration();
-#else
-#define PRINT_DCCPP
-#endif
 };
 
 //-------------------------------------------------------------------

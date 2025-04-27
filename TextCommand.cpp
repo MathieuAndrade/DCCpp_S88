@@ -38,20 +38,10 @@ void TextCommand::process()
   { // while data is present on the serial line
     c = Serial.read();
 
-#ifdef DCCPP_DEBUG_VERBOSE_MODE
-    Serial.print(c, HEX); // PC
-#endif
-
     if (c == '<') // start of new command
       commandString[0] = 0;
     else if (c == '>')
     { // end of new command
-
-#ifdef DCCPP_DEBUG_VERBOSE_MODE
-      Serial.println("");
-      Serial.print(F("+parse: "));
-      Serial.println(commandString); // PC
-#endif
 
       parse(commandString);
     }
@@ -59,19 +49,12 @@ void TextCommand::process()
       sprintf(commandString, "%s%c", commandString, c);  // otherwise, character is ignored (but continue to look for '<' or '>')
   } // while
 
-#endif
-
 } // TextCommand:process
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void TextCommand::parse(char *com)
 {
-
-#ifdef DCCPP_DEBUG_VERBOSE_MODE
-  Serial.print(com[0]);
-  Serial.println(F(" command"));
-#endif
 
   switch (com[0])
   {
@@ -100,12 +83,6 @@ void TextCommand::parse(char *com)
              */
     // DCCPP_INTERFACE.print("\n<y 00000000>"); or DCCPP_INTERFACE.print("\n<y 00>");
     S88::parse(com + 1);
-    break;
-#endif
-
-#ifdef DCCPP_PRINT_DCCPP
-  case 'C':
-    DCCpp::showConfiguration();
     break;
 #endif
 
@@ -495,12 +472,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 
     DCCPP_INTERFACE.print("<N ");
     DCCPP_INTERFACE.println("SERIAL>");
-
-#ifdef DCCPP_PRINT_DCCPP
-#ifdef USE_TURNOUT
-    Turnout::show();
-#endif
-#endif
     break;
 
   case ' ':

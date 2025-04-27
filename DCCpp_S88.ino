@@ -76,7 +76,6 @@ MEGA :
 1   SERIAL_TX0                      SERIAL_TX0
 2   S88_Clock_PIN                   DCC_SIGNAL_PIN_PROG
 3   DCC_ENABLE_PIN_MAIN             DCC_ENABLE_PIN_MAIN
-4   SDCARD_CS                       SDCARD_CS
 5   DCC_SIGNAL_PIN_PROG             S88_Clock_PIN
 6   S88_LOAD_PS_PIN                 S88_LOAD_PS_PIN
 7   S88_Reset_PIN                   S88_Reset_PIN
@@ -115,10 +114,6 @@ A7  E_BoosterIn                     E_BoosterIn                     Stop == 0, N
 
 **************************************************************/
 
-/////////////////////////////////////////////////////////////////////////////////////
-// DCCPP_DEBUG_MODE is defined in DCCpp.h line 354, 360, 366
-/////////////////////////////////////////////////////////////////////////////////////
-
 #include "Arduino.h"
 #include "DCCpp.h"
 #include "Config.h"
@@ -131,54 +126,9 @@ A7  E_BoosterIn                     E_BoosterIn                     Stop == 0, N
 #define E_BoosterIn A7 // also defined in CurrentMonitor.h line 50-51
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////
-// COMM SETUP - ***** Please select a COMM type and an Ethernet interface if needed *****
-/////////////////////////////////////////////////////////////////////////////////////
-
-#define COMM_TYPE 0 // Serial (USB) & NANO or UNO or MEGA
-// #define COMM_TYPE 1                 // Ethernet & MEGA only ==> ***** you must choose an interface in DCCpp.h line 376-379 and an IP address line 149 *****
-//                                                               ***** selectionner une interface dans DCCpp.h ligne 376-379 et une adresse IP ligne 149 *****
-
-#if COMM_TYPE == 0
 // enable serial communication
 #ifndef USE_TEXTCOMMAND
 #error To be able to compile this sample,the line #define USE_TEXTCOMMAND must be uncommented in DCCpp.h
-#endif
-
-#elif COMM_TYPE == 1
-#include <SD.h>
-#include <SPI.h>
-
-/////////////////////////////////////////////////////////////////////////////////////
-//
-// DEFINE STATIC IP ADDRESS *OR* COMMENT OUT TO USE DHCP
-//
-// enable ethernet communication
-// Circuit: ETHERNET WIZNET 5100 selected in DCCpp.h line 376
-// Ethernet shield attached to pins 10, 50, 51, 52 on MEGA
-/////////////////////////////////////////////////////////////////////////////////////
-
-// enable Ethernet communication
-
-#if !defined(USE_TEXTCOMMAND)
-#error To be able to compile this sample, the lines #define USE_TEXTCOMMAND must be uncommented in DCCpp.h
-#endif
-
-// #define DCCPP_INTERFACE eServer       // defined in DCCpp_Uno.h line28
-
-// the media access control (Ethernet hardware) address for the shield:
-uint8_t mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-// static IP address for the shield:
-uint8_t ip[] = {192, 168, 0, 200};
-
-// #define USE_DHCP TRUE
-#define EthernetPort 2560 // Warning: EthernetPort must be declared in DCCpp.cpp line 347
-EthernetServer DCCPP_INTERFACE(EthernetPort); // Create and instance of an EthernetServer
-
-// Shields:
-// SDCARD shield attached to pins 4, 50, 51, 52 on MEGA
-// #define SDCARD_CS 4             // Reserved pin for SD card CS : 4 - defined in DCCpp_Uno.h
-#define SS 53             // 53, MOSI on MEGA. SPI doesn't work without this pin set to output !
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +176,7 @@ void setup()
   Serial.println(F(" + S88"));
   Serial.println(F("Compatible avec CDM_Rail, WDD, TCOwifi, DMC, CDT, JMRI et Rocrail"));
   Serial.print(F("--------- Module DCC initialisé avec "));
-  Serial.print(COMM_TYPE ? "Ethernet" : "Serial port @ 115200 bauds");
+  Serial.print("Serial port @ 115200 bauds");
   Serial.println(F(" ---------"));
   delay(500);
 #else

@@ -52,18 +52,6 @@ void CurrentMonitor::check()
 #ifdef E_BOOSTER_ENABLE
     boolean eStop = (analogRead(E_BoosterIn) < 550) ? true : false; // low active, for Booster CDE
 
-#ifdef DCCPP_DEBUG_MODE
-    if (eStop != eStop_mem)
-    {
-        DCCPP_INTERFACE.print("eStop ");
-        DCCPP_INTERFACE.print(eStop);
-        DCCPP_INTERFACE.print("   ");
-        DCCPP_INTERFACE.println(analogRead(E_BoosterIn));
-        DCCPP_INTERFACE.print("powerState ");
-        DCCPP_INTERFACE.println(powerState);
-    }
-#endif
-
     if (eStop)
     {
         if (eStop_mem)
@@ -121,15 +109,6 @@ finished:
             origin = "Garage/dépot";
             break;
         }
-
-#ifdef DCCPP_DEBUG_MODE
-        DCCPP_INTERFACE.print(origin);
-        DCCPP_INTERFACE.println(F(" Power OFF ! Surcharge en courant détectée *****"));
-        DCCPP_INTERFACE.print(F("Courant lu : "));
-        DCCPP_INTERFACE.println(current);
-
-        DCCPP_INTERFACE.print(this->msg); // print corresponding error message
-#endif
     }
 } // CurrentMonitor::check
 
