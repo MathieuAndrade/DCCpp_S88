@@ -8,17 +8,9 @@ Part of DCC++ BASE STATION for the Arduino
 **********************************************************************/
 
 #include "DCCpp.h"
-//#include "DCCpp_Uno.h"
-//#include "PacketRegister.h"
-//#include "Comm.h"
-
-#ifdef USE_ETHERNET
-uint8_t DCCppConfig::EthernetIp[4];
-uint8_t DCCppConfig::EthernetMac[6];
-int DCCppConfig::EthernetPort = 0;
-
-EthernetProtocol DCCppConfig::Protocol = EthernetProtocol::TCP;
-#endif
+// #include "DCCpp_Uno.h"
+// #include "PacketRegister.h"
+// #include "Comm.h"
 
 byte DCCppConfig::SignalEnablePinMain = UNDEFINED_PIN;
 byte DCCppConfig::CurrentMonitorMain = UNDEFINED_PIN;
@@ -31,14 +23,16 @@ byte DCCppConfig::DirectionMotorB = UNDEFINED_PIN;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Register::initPackets() {
+void Register::initPackets()
+{
   activePacket = packet;
   updatePacket = packet + 1;
 } // Register::initPackets
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RegisterList::RegisterList(int maxNumRegs) {
+RegisterList::RegisterList(int maxNumRegs)
+{
   this->maxNumRegs = maxNumRegs;
   reg = (Register *)calloc((maxNumRegs + 1), sizeof(Register));
   for (int i = 0; i <= maxNumRegs; i++)
@@ -61,7 +55,8 @@ RegisterList::RegisterList(int maxNumRegs) {
 // CONVERTS 2, 3, 4, OR 5 BYTES INTO A DCC BIT STREAM WITH PREAMBLE, CHECKSUM, AND PROPER BYTE SEPARATORS
 // BITSTREAM IS STORED IN UP TO A 10-BYTE ARRAY (USING AT MOST 76 OF 80 BITS)
 
-void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int printFlag) volatile {
+void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int printFlag) volatile
+{
 #ifdef VISUALSTUDIO
   return;
 #endif
@@ -90,25 +85,34 @@ void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int pr
   buf[5] = b[2] >> 1;               // b[2], bits 7-1
   buf[6] = b[2] << 7;               // b[2], bit 0
 
-  if (nBytes == 3) {
+  if (nBytes == 3)
+  {
     p->nBits = 49;
-  } else {
+  }
+  else
+  {
     buf[6] += b[3] >> 2; // b[3], bits 7-2
     buf[7] = b[3] << 6;  // b[3], bit 1-0
-    if (nBytes == 4) {
+    if (nBytes == 4)
+    {
       p->nBits = 58;
-    } else {
+    }
+    else
+    {
       buf[7] += b[4] >> 3; // b[4], bits 7-3
       buf[8] = b[4] << 5;  // b[4], bits 2-0
-      if (nBytes == 5) {
+      if (nBytes == 5)
+      {
         p->nBits = 67;
-      } else {
+      }
+      else
+      {
         buf[8] += b[5] >> 4; // b[5], bits 7-4
         buf[9] = b[5] << 4;  // b[5], bits 3-0
         p->nBits = 76;
       } // >5 bytes
-    }   // >4 bytes
-  }     // >3 bytes
+    } // >4 bytes
+  } // >3 bytes
 
   nextReg = r;
   this->nRepeat = nRepeat;
@@ -123,7 +127,8 @@ void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int pr
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) volatile {
+void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) volatile
+{
   byte b[5]; // save space for checksum byte
   byte nB = 0;
 
@@ -134,7 +139,8 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
   b[nB++] = 0x3F; // 128-step speed control byte
   if (tSpeed >= 0)
     b[nB++] = tSpeed + (tSpeed > 0) + tDirection * 128; // max speed is 126, but speed codes range from 2-127 (0=stop, 1=emergency stop)
-  else {
+  else
+  {
     b[nB++] = 1;
     tSpeed = 0;
   }
@@ -146,8 +152,10 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
   // same machine but with a different register
   // This allows the different programs to synchronize
   // the registry number easily
-  for (int i = 0; i <= MAX_MAIN_REGISTERS; i++) {
-    if (DCCpp::mainRegs.addrTable[i] == cab) {
+  for (int i = 0; i <= MAX_MAIN_REGISTERS; i++)
+  {
+    if (DCCpp::mainRegs.addrTable[i] == cab)
+    {
       nReg = i;
       break;
     }
@@ -158,9 +166,6 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 #if defined(USE_TEXTCOMMAND)
   answerString = String("<T") + String(nReg) + String(" ") + String(cab) + String(" ") + String(tSpeed) + String(" ") + String(tDirection) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
   speedTable[nReg] = tDirection == 1 ? tSpeed : -tSpeed;
   addrTable[nReg] = cab;
@@ -168,13 +173,15 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 } // RegisterList::setThrottle(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::setThrottle(char *s) volatile {
+void RegisterList::setThrottle(char *s) volatile
+{
   int nReg;
   int cab;
   int tSpeed;
   int tDirection;
 
-  if (sscanf(s, "%d %d %d %d", &nReg, &cab, &tSpeed, &tDirection) != 4) {
+  if (sscanf(s, "%d %d %d %d", &nReg, &cab, &tSpeed, &tDirection) != 4)
+  {
 #ifdef DCCPP_DEBUG_MODE
     Serial.println(F("t Syntax error"));
 #endif
@@ -187,7 +194,8 @@ void RegisterList::setThrottle(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile {
+void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
+{
   byte b[5]; // save space for checksum byte
   byte nB = 0;
 
@@ -196,9 +204,12 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
 
   b[nB++] = lowByte(cab);
 
-  if (eByte < 0) {                   // this is a request for functions FL,F1-F12
+  if (eByte < 0)
+  {                                  // this is a request for functions FL,F1-F12
     b[nB++] = (fByte | 0x80) & 0xBF; // for safety this guarantees that first nibble of function byte will always be of binary form 10XX which should always be the case for FL,F1-F12
-  } else {                           // this is a request for functions F13-F28
+  }
+  else
+  {                                  // this is a request for functions F13-F28
     b[nB++] = (fByte | 0xDE) & 0xDF; // for safety this guarantees that first byte will either be 0xDE (for F13-F20) or 0xDF (for F21-F28)
     b[nB++] = eByte;
   }
@@ -206,9 +217,6 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
 #if defined(USE_TEXTCOMMAND)
   answerString = String("<F") + String(nReg) + String(" ") + String(cab) + String(" ") + String(fByte) + String(" ") + String(eByte) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
   /* NMRA DCC norm ask for two DCC packets instead of only one:
   "Command Stations that generate these packets, and which are not periodically refreshing these functions,
@@ -219,13 +227,15 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
 } // RegisterList::setFunction(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::setFunction(char *s) volatile {
+void RegisterList::setFunction(char *s) volatile
+{
   int cab;
   int fByte, eByte;
   int nParams;
 
   nParams = sscanf(s, "%d %d %d", &cab, &fByte, &eByte);
-  if (nParams < 2) {
+  if (nParams < 2)
+  {
 #ifdef DCCPP_DEBUG_MODE
     Serial.println(F("f Syntax error"));
 #endif
@@ -242,7 +252,8 @@ void RegisterList::setFunction(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::setAccessory(int aAdd, int aNum, int activate) volatile {
+void RegisterList::setAccessory(int aAdd, int aNum, int activate) volatile
+{
   byte b[3]; // save space for checksum byte
 
   b[0] = aAdd % 64 + 128;                                                    // first byte is of the form 10AAAAAA, where AAAAAA represent 6 least significant bits of accessory address
@@ -253,12 +264,14 @@ void RegisterList::setAccessory(int aAdd, int aNum, int activate) volatile {
 } // RegisterList::setAccessory(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::setAccessory(char *s) volatile {
+void RegisterList::setAccessory(char *s) volatile
+{
   int aAdd;     // the accessory address (0-511 = 9 bits)
   int aNum;     // the accessory number within that address (0-3)
   int activate; // flag indicated whether accessory should be activated (1) or deactivated (0) following NMRA recommended convention
 
-  if (sscanf(s, "%d %d %d", &aAdd, &aNum, &activate) != 3) {
+  if (sscanf(s, "%d %d %d", &aAdd, &aNum, &activate) != 3)
+  {
 #ifdef DCCPP_DEBUG_MODE
     Serial.println(F("a Syntax error"));
 #endif
@@ -276,7 +289,8 @@ void RegisterList::setAccessory(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::setExtendedAccessory(int aAdd, int val) volatile {
+void RegisterList::setExtendedAccessory(int aAdd, int val) volatile
+{
   byte b[4]; // save space for checksum byte
 
   b[0] = (aAdd >> 2) % 64 | B10000000;                  // first byte is of the form 10AAAAAA, where AAAAAA represent 6 of the 8 least significant bits of accessory address
@@ -288,11 +302,13 @@ void RegisterList::setExtendedAccessory(int aAdd, int val) volatile {
 } // RegisterList::setExtendedAccessory(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::setExtendedAccessory(char *s) volatile {
+void RegisterList::setExtendedAccessory(char *s) volatile
+{
   int aAdd; // the accessory address (1-2044 = 11 bits)
   byte val; // the accessory value for that address (0-31) following NMRA recommended convention, but byte holds 0..255
 
-  if (sscanf(s, "%d %d", &aAdd, &val) != 2) {
+  if (sscanf(s, "%d %d", &aAdd, &val) != 2)
+  {
 #ifdef DCCPP_DEBUG_MODE
     Serial.println(F("a Syntax error"));
 #endif
@@ -310,13 +326,12 @@ void RegisterList::setExtendedAccessory(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile {
+void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile
+{
 
-  if (nBytes < 2 || nBytes > 5) { // invalid valid packet
+  if (nBytes < 2 || nBytes > 5)
+  { // invalid valid packet
     DCCPP_INTERFACE.print("<mInvalid Packet>");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
     return;
   }
 
@@ -325,7 +340,8 @@ void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile {
 } // RegisterList::writeTextPacket(bytes)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::writeTextPacket(char *s) volatile {
+void RegisterList::writeTextPacket(char *s) volatile
+{
   int nReg;
   byte b[6];
   int nBytes;
@@ -339,7 +355,8 @@ void RegisterList::writeTextPacket(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile {
+int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile
+{
   byte bRead[4];
   int bValue;
   int c, d, base;
@@ -358,13 +375,15 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile {
 
   bValue = 0;
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; i++)
+  {
 
     c = 0;
     d = 0;
     base = 0;
 
-    for (int j = 0; j < ACK_BASE_COUNT; j++) {
+    for (int j = 0; j < ACK_BASE_COUNT; j++)
+    {
       int val = (int)analogRead(MonitorPin);
       base += val;
     }
@@ -376,7 +395,8 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile {
     loadPacket(0, bRead, 3, 5);       // NMRA recommends 5 verify packets
     loadPacket(0, resetPacket, 2, 1); // forces code to wait until all repeats of bRead are completed (and decoder begins to respond)
 
-    for (int j = 0; j < ACK_SAMPLE_COUNT; j++) {
+    for (int j = 0; j < ACK_SAMPLE_COUNT; j++)
+    {
       int val = (int)analogRead(MonitorPin);
       c = (int)((val - base) * ACK_SAMPLE_SMOOTHING + c * (1.0 - ACK_SAMPLE_SMOOTHING));
       if (c > ACK_SAMPLE_THRESHOLD)
@@ -401,7 +421,8 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile {
   loadPacket(0, bRead, 3, 5);       // NMRA recommends 5 verify packets
   loadPacket(0, resetPacket, 2, 1); // forces code to wait until all repeats of bRead are completed (and decoder begins to respond)
 
-  for (int j = 0; j < ACK_SAMPLE_COUNT; j++) {
+  for (int j = 0; j < ACK_SAMPLE_COUNT; j++)
+  {
     c = (int)((analogRead(MonitorPin) - base) * ACK_SAMPLE_SMOOTHING + c * (1.0 - ACK_SAMPLE_SMOOTHING));
     if (c > ACK_SAMPLE_THRESHOLD)
       d = 1;
@@ -413,20 +434,19 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile {
 #if defined(USE_TEXTCOMMAND)
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
 
   return bValue;
 }
 
-int RegisterList::readCV(int cv, int callBack, int callBackSub) volatile {
+int RegisterList::readCV(int cv, int callBack, int callBackSub) volatile
+{
   return RegisterList::readCVraw(cv, callBack, callBackSub);
 } // RegisterList::readCV(ints)
 
 #ifdef USE_TEXTCOMMAND
-int RegisterList::readCV(char *s) volatile {
+int RegisterList::readCV(char *s) volatile
+{
   int cv, callBack, callBackSub;
 
   if (sscanf(s, "%d %d %d", &cv, &callBack, &callBackSub) != 3) // cv = 1-1024
@@ -441,13 +461,15 @@ int RegisterList::readCV(char *s) volatile {
 } // RegisterList::readCV(string)
 #endif
 
-int RegisterList::readCVmain(int cv, int callBack, int callBackSub) volatile {
+int RegisterList::readCVmain(int cv, int callBack, int callBackSub) volatile
+{
   return RegisterList::readCVraw(cv, callBack, callBackSub);
 
 } // RegisterList::readCV_Main()
 
 #ifdef USE_TEXTCOMMAND
-int RegisterList::readCVmain(char *s) volatile {
+int RegisterList::readCVmain(char *s) volatile
+{
   int cv, callBack, callBackSub;
 
   if (sscanf(s, "%d %d %d", &cv, &callBack, &callBackSub) != 3) // cv = 1-1024
@@ -464,7 +486,8 @@ int RegisterList::readCVmain(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub) volatile {
+void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub) volatile
+{
   byte bWrite[4];
   int c, d, base;
 
@@ -480,7 +503,8 @@ void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub
   loadPacket(0, idlePacket, 2, 10);
 
   // If monitor pin undefined, write cv without any confirmation...
-  if (DCCppConfig::CurrentMonitorProg != UNDEFINED_PIN) {
+  if (DCCppConfig::CurrentMonitorProg != UNDEFINED_PIN)
+  {
     c = 0;
     d = 0;
     base = 0;
@@ -495,7 +519,8 @@ void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub
     loadPacket(0, bWrite, 3, 5);      // NMRA recommends 5 verify packets
     loadPacket(0, resetPacket, 2, 1); // forces code to wait until all repeats of bRead are completed (and decoder begins to respond)
 
-    for (int j = 0; j < ACK_SAMPLE_COUNT; j++) {
+    for (int j = 0; j < ACK_SAMPLE_COUNT; j++)
+    {
       c = (int)((analogRead(DCCppConfig::CurrentMonitorProg) - base) * ACK_SAMPLE_SMOOTHING + c * (1.0 - ACK_SAMPLE_SMOOTHING));
       if (c > ACK_SAMPLE_THRESHOLD)
         d = 1;
@@ -508,14 +533,12 @@ void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub
 #if defined(USE_TEXTCOMMAND)
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
 } // RegisterList::writeCVByte(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::writeCVByte(char *s) volatile {
+void RegisterList::writeCVByte(char *s) volatile
+{
   int bValue, cv, callBack, callBackSub;
 
   if (sscanf(s, "%d %d %d %d", &cv, &bValue, &callBack, &callBackSub) != 4) // cv = 1-1024
@@ -532,7 +555,8 @@ void RegisterList::writeCVByte(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int callBackSub) volatile {
+void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int callBackSub) volatile
+{
   byte bWrite[4];
   int c, d, base;
 
@@ -550,7 +574,8 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
   loadPacket(0, idlePacket, 2, 10);
 
   // If monitor pin undefined, write cv without any confirmation...
-  if (DCCppConfig::CurrentMonitorProg != UNDEFINED_PIN) {
+  if (DCCppConfig::CurrentMonitorProg != UNDEFINED_PIN)
+  {
     c = 0;
     d = 0;
     base = 0;
@@ -565,7 +590,8 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
     loadPacket(0, bWrite, 3, 5);      // NMRA recommends 5 verfy packets
     loadPacket(0, resetPacket, 2, 1); // forces code to wait until all repeats of bRead are completed (and decoder begins to respond)
 
-    for (int j = 0; j < ACK_SAMPLE_COUNT; j++) {
+    for (int j = 0; j < ACK_SAMPLE_COUNT; j++)
+    {
       c = (int)((analogRead(DCCppConfig::CurrentMonitorProg) - base) * ACK_SAMPLE_SMOOTHING + c * (1.0 - ACK_SAMPLE_SMOOTHING));
       if (c > ACK_SAMPLE_THRESHOLD)
         d = 1;
@@ -578,14 +604,12 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
 #if defined(USE_TEXTCOMMAND)
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bNum) + String(" ") + String(bValue) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
 } // RegisterList::writeCVBit(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::writeCVBit(char *s) volatile {
+void RegisterList::writeCVBit(char *s) volatile
+{
   int bNum, bValue, cv, callBack, callBackSub;
 
   if (sscanf(s, "%d %d %d %d %d", &cv, &bNum, &bValue, &callBack, &callBackSub) != 5) // cv = 1-1024
@@ -602,7 +626,8 @@ void RegisterList::writeCVBit(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::writeCVByteMain(int cab, int cv, int bValue) volatile {
+void RegisterList::writeCVByteMain(int cab, int cv, int bValue) volatile
+{
   byte b[6]; // save space for checksum byte
   byte nB = 0;
 
@@ -621,12 +646,14 @@ void RegisterList::writeCVByteMain(int cab, int cv, int bValue) volatile {
 } // RegisterList::writeCVByteMain(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::writeCVByteMain(char *s) volatile {
+void RegisterList::writeCVByteMain(char *s) volatile
+{
   int cab;
   int cv;
   int bValue;
 
-  if (sscanf(s, "%d %d %d", &cab, &cv, &bValue) != 3) {
+  if (sscanf(s, "%d %d %d", &cab, &cv, &bValue) != 3)
+  {
 #ifdef DCCPP_DEBUG_MODE
     Serial.println(F("w Syntax error"));
 #endif
@@ -639,7 +666,8 @@ void RegisterList::writeCVByteMain(char *s) volatile {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegisterList::writeCVBitMain(int cab, int cv, int bNum, int bValue) volatile {
+void RegisterList::writeCVBitMain(int cab, int cv, int bNum, int bValue) volatile
+{
   byte b[6]; // save space for checksum byte
   byte nB = 0;
 
@@ -661,13 +689,15 @@ void RegisterList::writeCVBitMain(int cab, int cv, int bNum, int bValue) volatil
 } // RegisterList::writeCVBitMain(ints)
 
 #ifdef USE_TEXTCOMMAND
-void RegisterList::writeCVBitMain(char *s) volatile {
+void RegisterList::writeCVBitMain(char *s) volatile
+{
   int cab;
   int cv;
   int bNum;
   int bValue;
 
-  if (sscanf(s, "%d %d %d %d", &cab, &cv, &bNum, &bValue) != 4) {
+  if (sscanf(s, "%d %d %d %d", &cab, &cv, &bNum, &bValue) != 4)
+  {
 #ifdef DCCPP_DEBUG_MODE
     Serial.println(F("w Syntax error"));
 #endif
@@ -681,18 +711,17 @@ void RegisterList::writeCVBitMain(char *s) volatile {
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DCCPP_DEBUG_MODE
-void RegisterList::printPacket(int nReg, byte *b, int nBytes, int nRepeat) volatile {
+void RegisterList::printPacket(int nReg, byte *b, int nBytes, int nRepeat) volatile
+{
   answerString = "<*" + String(nReg) + ":";
 
-  for (int i = 0; i < nBytes; i++) {
+  for (int i = 0; i < nBytes; i++)
+  {
     answerString += " " + String(b[i], HEX);
   }
 
   answerString += " / " + String(nRepeat) + ">";
   DCCPP_INTERFACE.print((const String &)answerString);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 } // RegisterList::printPacket()
 #endif
 

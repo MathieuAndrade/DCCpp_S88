@@ -20,7 +20,7 @@ Les variables globales utilisent 1787 octets (21%) de mémoire dynamique, ce qui
 ***** Ethernet info at line 169 & 177                       *****
 ***** More S88 infos at line 240 & 247                      *****
 ***** For CDE booster, see currentMonitor.h, lines 50-51    *****
- 
+
 *****=======================================================*****
 
 - Logiciel pour générer des trames DCC à partir de commandes reçues par la liaison USB (port COM virtuel) ou Ethernet
@@ -126,16 +126,16 @@ A7  E_BoosterIn                     E_BoosterIn                     Stop == 0, N
 // ***** Pour utiliser CDM-Rail avec le bus S88, dé-commenter la ligne 16 de S88.h *****
 
 // ***** Pour activer le bouton d'arret d'urgence sur A5, placer un bouton poussoir connecté avec la masse
-#define EmergencyStop A5  // also defined in CurrentMonitor.h line 52
+#define EmergencyStop A5 // also defined in CurrentMonitor.h line 52
 #ifdef ARDUINO_AVR_MEGA
-#define E_BoosterIn A7  // also defined in CurrentMonitor.h line 50-51
+#define E_BoosterIn A7 // also defined in CurrentMonitor.h line 50-51
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////////
 // COMM SETUP - ***** Please select a COMM type and an Ethernet interface if needed *****
 /////////////////////////////////////////////////////////////////////////////////////
 
-#define COMM_TYPE 0  // Serial (USB) & NANO or UNO or MEGA
+#define COMM_TYPE 0 // Serial (USB) & NANO or UNO or MEGA
 // #define COMM_TYPE 1                 // Ethernet & MEGA only ==> ***** you must choose an interface in DCCpp.h line 376-379 and an IP address line 149 *****
 //                                                               ***** selectionner une interface dans DCCpp.h ligne 376-379 et une adresse IP ligne 149 *****
 
@@ -146,7 +146,6 @@ A7  E_BoosterIn                     E_BoosterIn                     Stop == 0, N
 #endif
 
 #elif COMM_TYPE == 1
-#include "ServWeb.h"
 #include <SD.h>
 #include <SPI.h>
 
@@ -161,29 +160,26 @@ A7  E_BoosterIn                     E_BoosterIn                     Stop == 0, N
 
 // enable Ethernet communication
 
-#if !defined(USE_TEXTCOMMAND) || !defined(USE_ETHERNET)
-#error To be able to compile this sample, the lines #define USE_TEXTCOMMAND and #define USE_ETHERNET must be uncommented in DCCpp.h
+#if !defined(USE_TEXTCOMMAND)
+#error To be able to compile this sample, the lines #define USE_TEXTCOMMAND must be uncommented in DCCpp.h
 #endif
 
-//#define DCCPP_INTERFACE eServer       // defined in DCCpp_Uno.h line28
-
-//#define USE_ETHERNET_WIZNET_5100 and #define USE_ETHERNET // to be defined in DCCpp.h line 376
+// #define DCCPP_INTERFACE eServer       // defined in DCCpp_Uno.h line28
 
 // the media access control (Ethernet hardware) address for the shield:
-uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-//static IP address for the shield:
-uint8_t ip[] = { 192, 168, 0, 200 };
+uint8_t mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+// static IP address for the shield:
+uint8_t ip[] = {192, 168, 0, 200};
 
 // #define USE_DHCP TRUE
-#define EthernetPort 2560  // Warning: EthernetPort must be declared in DCCpp.cpp line 347
-EthernetServer DCCPP_INTERFACE(EthernetPort);  // Create and instance of an EthernetServer
+#define EthernetPort 2560 // Warning: EthernetPort must be declared in DCCpp.cpp line 347
+EthernetServer DCCPP_INTERFACE(EthernetPort); // Create and instance of an EthernetServer
 
 // Shields:
 // SDCARD shield attached to pins 4, 50, 51, 52 on MEGA
-//#define SDCARD_CS 4             // Reserved pin for SD card CS : 4 - defined in DCCpp_Uno.h
-#define SS 53              // 53, MOSI on MEGA. SPI doesn't work without this pin set to output !
+// #define SDCARD_CS 4             // Reserved pin for SD card CS : 4 - defined in DCCpp_Uno.h
+#define SS 53             // 53, MOSI on MEGA. SPI doesn't work without this pin set to output !
 #endif
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Analog
@@ -191,27 +187,26 @@ EthernetServer DCCPP_INTERFACE(EthernetPort);  // Create and instance of an Ethe
 
 // A0 reads current of "Main" power district
 // A1 reads current of "Prog" power district
-#define i_Ext A2     // A2 reads current of "External" power district
-#define i_Garage A3  // A3 reads current of "Garage" power district
-#define i_Depot A4   // A4 reads current of "Depot" power district \
+#define i_Ext A2    // A2 reads current of "External" power district
+#define i_Garage A3 // A3 reads current of "Garage" power district
+#define i_Depot A4  // A4 reads current of "Depot" power district \
                      // A5 free \
                      // A6 free
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Digital
 /////////////////////////////////////////////////////////////////////////////////////
 
-#define EN_Ext 14     // enable "External" power district
-#define EN_Garage 15  // enable "Garage" power district
-#define EN_Depot 16   // enable "Depot" power district
-
+#define EN_Ext 14    // enable "External" power district
+#define EN_Garage 15 // enable "Garage" power district
+#define EN_Depot 16  // enable "Depot" power district
 
 /////////////////////////////////////////////////////////////////////////////////////
 // ARDUINO SETUP
 /////////////////////////////////////////////////////////////////////////////////////
 
-void setup() {
+void setup()
+{
   /////////////////////////////////////////////
   // This pinout is used à la place du 3 (because this
   pinMode(14, INPUT);
@@ -220,7 +215,7 @@ void setup() {
   Serial.begin(115200);
   Serial.flush();
 
-  #ifndef USE_CDMRAIL
+#ifndef USE_CDMRAIL
   delay(1000);
   Serial.println(F("Initialisation de la liaison serie USB2COM 115200 baud"));
   Serial.println(F("Programme de conduite DCCpp_S88 pour Arduino UNO/MEGA2560 avec booster L298N et MAX471"));
@@ -234,16 +229,16 @@ void setup() {
   Serial.print(COMM_TYPE ? "Ethernet" : "Serial port @ 115200 bauds");
   Serial.println(F(" ---------"));
   delay(500);
-  #else
+#else
   Serial.println(F("DCCpp starting..."));
   Serial.println(F("<DCCpp ready to use CDM-Rail>"));
-  #endif
+#endif
 
-  pinMode(4, INPUT_PULLUP);   // disable SD card until initialisation
-  pinMode(10, INPUT_PULLUP);  // disable Ethernet until initialisation
+  pinMode(4, INPUT_PULLUP);  // disable SD card until initialisation
+  pinMode(10, INPUT_PULLUP); // disable Ethernet until initialisation
   pinMode(EmergencyStop, INPUT_PULLUP);
 
-#if defined(ARDUINO_AVR_MEGA) || defined(ARDUINO_AVR_NANO)  // if needed, E_BOOSTER_ENABLE must be defined in currentMonitor.h at line 51
+#if defined(ARDUINO_AVR_MEGA) || defined(ARDUINO_AVR_NANO) // if needed, E_BOOSTER_ENABLE must be defined in currentMonitor.h at line 51
   pinMode(E_BoosterIn, INPUT);
 #endif
   /*
@@ -261,68 +256,33 @@ void setup() {
   // S88 pins are defined in S88.h . You can change any pin number to fit your need.
   // If you don't use DataR, you read all 0 on the second half of the data dump
 
-#ifdef USE_S88                       // Les pins sont déclarées dans S88.h
-  pinMode(S88_LOAD_PS_PIN, OUTPUT);  // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Load PIN
-  pinMode(S88_Reset_PIN, OUTPUT);    // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Reset PIN
-  pinMode(S88_Clock_PIN, OUTPUT);    // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Clock PIN
-  pinMode(S88_DataL_PIN, INPUT);     // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 DataL PIN (1st data in the buffer) with 10k pulldown on your board
-  pinMode(S88_DataR_PIN, INPUT);     // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 DataR PIN (last data in the buffer) with 10k pulldown on your board
+#ifdef USE_S88                      // Les pins sont déclarées dans S88.h
+  pinMode(S88_LOAD_PS_PIN, OUTPUT); // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Load PIN
+  pinMode(S88_Reset_PIN, OUTPUT);   // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Reset PIN
+  pinMode(S88_Clock_PIN, OUTPUT);   // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Clock PIN
+  pinMode(S88_DataL_PIN, INPUT);    // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 DataL PIN (1st data in the buffer) with 10k pulldown on your board
+  pinMode(S88_DataR_PIN, INPUT);    // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 DataR PIN (last data in the buffer) with 10k pulldown on your board
 
   digitalWrite(S88_LOAD_PS_PIN, LOW);
   digitalWrite(S88_Clock_PIN, LOW);
   digitalWrite(S88_Reset_PIN, LOW);
 #endif
 
-#if defined(USE_ETHERNET)
-  pinMode(SS, OUTPUT);            // SS for Ethernet controller
-  pinMode(SDCARD_CS, OUTPUT);     // CS for SD card
-  digitalWrite(SDCARD_CS, HIGH);  // disable CS
-  Serial.println(F("*************\nInitialisation SDCARD ..."));
-  if (!SD.begin(SDCARD_CS)) {  //teste la communication avec la carte(pin 4)
-    Serial.println(F("Communication impossible avec SDCARD"));
-  } else {
-    Serial.println(F("Communication with SDCARD ok !"));
-  }
-
-  // You can use Ethernet.init(pin) to configure the CS pin
-  // Ethernet.init(10);  // Most Arduino shields
-  // Ethernet.init(5);   // MKR ETH shield
-
-#ifdef USE_DHCP
-  DCCpp::beginEthernet(mac);  // Start networking using DHCP to get an IP Address
-#else
-  DCCpp::beginEthernet(mac, ip);  // Start networking using a fixed IP Address
-#endif
-
-  // Check for Ethernet hardware present
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("");
-    Serial.println(F("Ethernet shield was not found. Please use Serial."));
-  }
-
-  else if (Ethernet.linkStatus() == LinkOFF) {
-    Serial.println(F("Ethernet cable is not connected."));
-  } else {
-    Serial.print("Server is at ");
-    Serial.println(Ethernet.localIP());
-  }
-#endif
-
   DCCpp::begin();
   // Configuration for Arduino Mega2560 + 2 L298 + 2 MAX471. See the page 'Configuration lines' in the documentation in DCCpp.h for other samples.
 
-  DCCpp::beginMain(UNDEFINED_PIN, DCC_SIGNAL_PIN_MAIN, 14, A0);  //defined in config.h : DCC_SIGNAL_PIN_MAIN 12  // Arduino Mega - uses OC1B
+  DCCpp::beginMain(UNDEFINED_PIN, DCC_SIGNAL_PIN_MAIN, 14, A0); // defined in config.h : DCC_SIGNAL_PIN_MAIN 12  // Arduino Mega - uses OC1B
   //                                                                                                              10 for Arduino UNO  - uses OC1B
-  DCCpp::beginProg(UNDEFINED_PIN, DCC_SIGNAL_PIN_PROG, 11, A1);  //defined in config.h : DCC_SIGNAL_PIN_PROG  2  // Arduino Mega - uses OC3B
+  DCCpp::beginProg(UNDEFINED_PIN, DCC_SIGNAL_PIN_PROG, 11, A1); // defined in config.h : DCC_SIGNAL_PIN_PROG  2  // Arduino Mega - uses OC3B
   //                                                                                                               5 for Arduino UNO  - uses OC0B
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 // MAIN ARDUINO LOOP
 /////////////////////////////////////////////////////////////////////////////////////
 
-void loop() {
+void loop()
+{
 
   // Tout le décodage des commandes reçues par la liaison série sont décodées dans le fichier "TextCommand.cpp" line 34
   // L'esssentiel du travail de la boucle s'effectue dans le fichier "DCCpp.cpp" line 92
@@ -331,5 +291,5 @@ void loop() {
   // Valeurs : 300 ==> 1.5 A, 400 ==> 2.0 A, 500 ==> 2.5 A
   // Modif pour DEBUG dans le fichier DCCpp.h line 347, 353, 359
 
-  DCCpp::loop();  // dans DCCpp.cpp ligne 92
+  DCCpp::loop(); // dans DCCpp.cpp ligne 92
 }

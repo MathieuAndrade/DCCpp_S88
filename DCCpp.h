@@ -371,10 +371,6 @@ Main include file of the library.*/
 #define USE_TURNOUT
 #define USE_S88
 #define USE_TEXTCOMMAND
-// #define USE_ETHERNET_WIZNET_5100
-// #define USE_ETHERNET_WIZNET_5500
-// #define USE_ETHERNET_WIZNET_5200
-// #define USE_ETHERNET_ENC28J60
 // #define PING_MASTER
 
 #ifdef DOXYGEN_SPECIFIC
@@ -389,21 +385,10 @@ Main include file of the library.*/
 /**Comment this line to avoid using and compiling Serial commands.*/
 #define USE_TEXTCOMMAND
 /**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5100 chip (Arduino Shield v1).*/
-//   #define USE_ETHERNET_WIZNET_5100
-/**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5500 chip (Arduino Shield v2).*/
-//   #define USE_ETHERNET_WIZNET_5500
-/**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5200 chip (Seeed Studio).*/
-//   #define USE_ETHERNET_WIZNET_5200
-/**Comment this line to avoid using and compiling Ethernet shield using ENC28J60 chip.*/
-//   #define USE_ETHERNET_ENC28J60
 
 #undef USE_TURNOUT
 #undef USE_EEPROM
 #undef USE_TEXTCOMMAND
-#undef USE_ETHERNET_WIZNET_5100
-#undef USE_ETHERNET_WIZNET_5500
-#undef USE_ETHERNET_WIZNET_5200
-#undef USE_ETHERNET_ENC28J60
 
 /** If this is defined, the library will do many checks during setup and execution, and print errors, warnings and
 information messages on console. These messages can take a lot of memory, so be careful about the free memory of
@@ -421,17 +406,12 @@ If DCCPP_PRINT_DCCPP is not defined, PRINT_DCCPP is defined as empty, so you wil
 #endif
 #endif
 
-#if defined(USE_ETHERNET_WIZNET_5100) || defined(USE_ETHERNET_WIZNET_5500) || defined(USE_ETHERNET_WIZNET_5200) || defined(USE_ETHERNET_ENC28J60)
-#define USE_ETHERNET
-#endif
-
 /////////////////////////////////////
 
 #include "DCCpp_Uno.h"
 #include "PacketRegister.h"
 #include "CurrentMonitor.h"
 #include "Config.h"
-#include "Comm.h"
 
 #ifdef USE_TURNOUT
 #include "Turnout.h"

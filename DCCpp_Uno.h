@@ -23,24 +23,15 @@ Part of DCC++ BASE STATION for the Arduino
 // SELECT COMMUNICATION INTERACE
 /////////////////////////////////////////////////////////////////////////////////////
 
-#if defined(USE_ETHERNET)
-
-  #define DCCPP_INTERFACE eServer
-  #define SDCARD_CS 4
-  
-#else
-
-  // define DCCPP_INTERFACE as serial in all cases to be able at least to print diagnostic messages on console
-  #define DCCPP_INTERFACE Serial
-
-#endif
+// define DCCPP_INTERFACE as serial in all cases to be able at least to print diagnostic messages on console
+#define DCCPP_INTERFACE Serial
 
 /////////////////////////////////////////////////////////////////////////////////////
 // SET WHETHER TO SHOW PACKETS - DIAGNOSTIC MODE ONLY
 /////////////////////////////////////////////////////////////////////////////////////
 
 // If SHOW_PACKETS is set to 1, then for select main operations track commands that modify an internal DCC packet register,
-// if printFlag for that command is also set to 1, DCC++ BASE STATION will additionally return the 
+// if printFlag for that command is also set to 1, DCC++ BASE STATION will additionally return the
 // DCC packet contents of the modified register in the following format:
 
 //    <* REG: B1 B2 ... Bn CSUM / REPEAT>
@@ -51,8 +42,8 @@ Part of DCC++ BASE STATION for the Arduino
 //    Bn: the nth hexadecimal byte of the DCC packet
 //    CSUM: a checksum byte that is required to be the final byte in any DCC packet
 //    REPEAT: the number of times the DCC packet was re-transmitted to the tracks after its iniital transmission
- 
-//#define SHOW_PACKETS  0       // set to zero to disable printing of every packet for select main operations track commands
+
+// #define SHOW_PACKETS  0       // set to zero to disable printing of every packet for select main operations track commands
 
 /////////////////////////////////////////////////////////////////////////////////////
 

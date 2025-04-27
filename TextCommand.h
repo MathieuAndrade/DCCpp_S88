@@ -11,7 +11,6 @@ Part of DCC++ BASE STATION for the Arduino
 #define TextCommand_h
 
 #include "DCCpp.h"
-#include "ServWeb.h"
 
 /** \defgroup commandsGroup Text Commands Syntax
  */
@@ -27,7 +26,8 @@ Part of DCC++ BASE STATION for the Arduino
 WITH OPTIONAL PARAMETERS, AND BRACKETED BY < AND > SYMBOLS.  SPACES BETWEEN PARAMETERS
 ARE REQUIRED.  SPACES ANYWHERE ELSE ARE IGNORED.  A SPACE BETWEEN THE SINGLE-CHARACTER
 COMMAND AND THE FIRST PARAMETER IS ALSO NOT REQUIRED.*/
-struct TextCommand {
+struct TextCommand
+{
   static char commandString[MAX_COMMAND_LENGTH + 1];
   static void init(volatile RegisterList *, volatile RegisterList *, CurrentMonitor *);
   static void parse(char *);

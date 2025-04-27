@@ -347,34 +347,6 @@ void DCCpp::begin()
 
 } // begin
 
-#ifdef USE_ETHERNET
-void DCCpp::beginEthernet(uint8_t *inMac, uint8_t *inIp, EthernetProtocol inProtocol)
-{
-    if (inIp != NULL)
-        for (int i = 0; i < 4; i++)
-            DCCppConfig::EthernetIp[i] = inIp[i];
-
-    for (int i = 0; i < 6; i++)
-        DCCppConfig::EthernetMac[i] = inMac[i];
-
-    DCCppConfig::Protocol = inProtocol;
-
-    DCCppConfig::EthernetPort = 2560; // e_port
-
-    if (inIp == NULL)
-        Ethernet.begin(inMac); // Start networking using DHCP to get an IP Address
-    else
-        Ethernet.begin(inMac, inIp); // Start networking using STATIC IP Address
-
-    DCCPP_INTERFACE.begin();
-#ifdef DCCPP_DEBUG_MODE
-    // pinMode(LED_BUILTIN, OUTPUT);
-    showConfiguration();
-    Serial.println(F("beginEthernet achieved"));
-#endif
-} // beginEthernet
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 // DEFINE THE INTERRUPT LOGIC THAT GENERATES THE DCC SIGNAL
 ///////////////////////////////////////////////////////////////////////////////
@@ -546,10 +518,6 @@ void DCCpp::showConfiguration()
     Serial.print(F("NUM TURNOUTS: "));
     Serial.println(EEStore::data.nTurnouts);
 #endif
-#if defined(USE_OUTPUT)
-    Serial.print(F("     OUTPUTS: "));
-    Serial.println(EEStore::data.nOutputs);
-#endif
 #if defined(USE_S88)
     Serial.print(F("     S88   M: "));
     Serial.println(EEStore::data.nS88);
@@ -558,30 +526,7 @@ void DCCpp::showConfiguration()
 
 #ifdef USE_TEXTCOMMAND
     Serial.print(F("\nINTERFACE: "));
-#ifdef USE_ETHERNET
-    Serial.println(F("ETHERNET"));
-    Serial.print(F("MAC ADDRESS:  "));
-    for (int i = 0; i < 5; i++)
-    {
-        Serial.print(DCCppConfig::EthernetMac[i], HEX);
-        Serial.print(F(":"));
-    }
-    Serial.println(DCCppConfig::EthernetMac[5], HEX);
-    Serial.print(F("IP ADDRESS:   "));
-    Serial.print(Ethernet.localIP());
-    //  Serial.print(F("PORT:         "));
-    Serial.print(F(":"));
-    Serial.println(DCCppConfig::EthernetPort);
-
-    /*#ifdef IP_ADDRESS
-        Serial.println(F(" (STATIC)"));
-    #else
-        Serial.println(F(" (DHCP)"));
-    #endif*/
-
-#else
     Serial.println(F("SERIAL"));
-#endif
 
 #endif
     Serial.println(F("DCCppS88 ready"));
@@ -623,10 +568,6 @@ void DCCpp::powerOn()
     DCCpp::pingSend = false;
     DCCpp::pingTime = millis();
     DCCpp::panicStopped = false;
-
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
 }
 
 void DCCpp::powerOff()
@@ -636,9 +577,6 @@ void DCCpp::powerOff()
     if (DCCppConfig::SignalEnablePinMain != UNDEFINED_PIN)
         digitalWrite(DCCppConfig::SignalEnablePinMain, LOW);
     DCCPP_INTERFACE.print("<p0>");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
 
     stopAllThrottles();
 }

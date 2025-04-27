@@ -56,9 +56,7 @@ void Turnout::begin(int id, int add, int subAdd)
 
 #ifdef USE_TEXTCOMMAND
 	DCCPP_INTERFACE.print("<O>");
-#if !defined(USE_ETHERNET)
-	DCCPP_INTERFACE.println("");
-#endif
+
 #endif
 }
 
@@ -93,9 +91,7 @@ void Turnout::activate(int s)
 		DCCPP_INTERFACE.print(" 0>");
 	else
 		DCCPP_INTERFACE.print(" 1>");
-#if !defined(USE_ETHERNET)
-	DCCPP_INTERFACE.println("");
-#endif
+
 #endif
 }
 
@@ -122,9 +118,6 @@ void Turnout::remove(int id)
 	{
 #ifdef USE_TEXTCOMMAND
 		DCCPP_INTERFACE.print("<Xt>");
-#if !defined(USE_ETHERNET)
-		DCCPP_INTERFACE.println("");
-#endif
 #endif
 		return;
 	}
@@ -138,9 +131,6 @@ void Turnout::remove(int id)
 
 #ifdef USE_TEXTCOMMAND
 	DCCPP_INTERFACE.print("<O>");
-#if !defined(USE_ETHERNET)
-	DCCPP_INTERFACE.println("");
-#endif
 #endif
 }
 
@@ -261,9 +251,6 @@ void Turnout::parse(char *c)
 	//                             DCCPP_INTERFACE.print(" 0>");
 	//                         else
 	//                             DCCPP_INTERFACE.print(" 1>");
-	//         #if !defined(USE_ETHERNET)
-	//                             DCCPP_INTERFACE.println("");
-	//         #endif
 	//                     }
 	//                     else
 	//                         t->activate(s);
@@ -278,9 +265,6 @@ void Turnout::parse(char *c)
 	//                 Serial.println(">");
 	//               } else {
 	//                     DCCPP_INTERFACE.print("<Xt>");
-	//         #if !defined(USE_ETHERNET)
-	//                     DCCPP_INTERFACE.println("");
-	//         #endif
 	//               }
 	//         #endif
 	//         */
@@ -310,9 +294,6 @@ Turnout *Turnout::create(int id, int add, int subAdd)
 	{ // problem allocating memory
 #ifdef USE_TEXTCOMMAND
 		DCCPP_INTERFACE.print("<Xt>");
-#if !defined(USE_ETHERNET)
-		DCCPP_INTERFACE.println("");
-#endif
 #endif
 		return (tt);
 	}
@@ -336,9 +317,6 @@ void Turnout::show()
 	if (firstTurnout == NULL)
 	{
 		DCCPP_INTERFACE.print("<Xt>");
-#if !defined(USE_ETHERNET)
-		DCCPP_INTERFACE.println("");
-#endif
 		return;
 	}
 
@@ -354,9 +332,6 @@ void Turnout::show()
 			DCCPP_INTERFACE.print(" 0>");
 		else
 			DCCPP_INTERFACE.print(" 1>");
-#if !defined(USE_ETHERNET)
-		DCCPP_INTERFACE.println("");
-#endif
 	}
 }
 #endif

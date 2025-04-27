@@ -50,7 +50,6 @@
 #ifdef USE_S88
   #include "S88.h"
   #include "DCCpp_Uno.h"
-  #include "Comm.h"
 
   #ifdef VISUALSTUDIO
     #include "string.h"
@@ -158,9 +157,6 @@ void S88::check() {
                 DCCPP_INTERFACE.print( tmp[0] == '0' ? "<q " : "<Q " );
                 DCCPP_INTERFACE.print(s88index+1); // s88index range 0..511
                 DCCPP_INTERFACE.print(">");
-#if !defined(USE_ETHERNET)
-                DCCPP_INTERFACE.println("");
-#endif
               }
             }
           }
@@ -168,9 +164,6 @@ void S88::check() {
           if (DataFormat < 3) {
           S88Status += ">";                        // end of feedback (CDT3x or CDM-Rail)
             DCCPP_INTERFACE.print(S88Status);      // send automaticly data at each sensors state change
-#if !defined(USE_ETHERNET)
-            DCCPP_INTERFACE.println("");
-#endif
           }
 
           Old_Occ = OccL;      // save data
@@ -212,18 +205,10 @@ void S88::parse(char *c) {
     case 1:                    // argument is string with Nb_S88_Modules (default DataFormat is Binary)
       if (n < 0 || n > 64 || (n & 1 == 1)) {
         DCCPP_INTERFACE.print(F ("<X Bad Argument value>") );                            // Bad Argument Value
-
-#if !defined(USE_ETHERNET)
-        DCCPP_INTERFACE.println("");
-#endif
       } else {
         DataFormat = (n > 0) ? 0 : 9;      // Output DataFormat 0=binAscii 9=stop
         N = n;                 // S88 byte length
         DCCPP_INTERFACE.print("<o " + String(N) + "*8 " + String(DataFormat) + ">");     // confirm command was receceived
-
-#if !defined(USE_ETHERNET)
-        DCCPP_INTERFACE.println("");
-#endif
 
 #ifdef USE_EEPROM
         if (N != M) store();
@@ -237,9 +222,6 @@ void S88::parse(char *c) {
       if ((n < 0 || n > 64) || (n & 1 == 1) || f < 0 || f > 3) {
         DCCPP_INTERFACE.print(F ("<X Bad Argument value>") );                            // Bad Argument Value
 
-#if !defined(USE_ETHERNET)
-        DCCPP_INTERFACE.println("");
-#endif
       } else {
         DataFormat = (n > 0) ? f : 9;      // Output DataFormat 0=binAscii 1=hexAscii 2=pure hexa 9=stop
         N = n;                 // S88 byte length
@@ -247,10 +229,6 @@ void S88::parse(char *c) {
 //        DataFormat = 3;        // JMRI, Rocrail or SENSOR style
         if (f != 3) {
           DCCPP_INTERFACE.print("<o " + String(N) + "*8 " + String(DataFormat) + ">");   // confirm command was receceived
-
-#if !defined(USE_ETHERNET)
-          DCCPP_INTERFACE.println("");
-#endif
         }
 
 #ifdef USE_EEPROM
@@ -264,10 +242,6 @@ void S88::parse(char *c) {
 
     default:                   // argument count incorrect (0, 1, 2 or 3 are valid)
       DCCPP_INTERFACE.print(F ("<x Bad Argument count>") );                              // Bad Argument count
-
-#if !defined(USE_ETHERNET)
-      DCCPP_INTERFACE.println("");
-#endif
       break;
   } // end of switch
 
@@ -311,9 +285,6 @@ void S88::load() {
 #ifdef DCCPP_DEBUG_MODE
   DCCPP_INTERFACE.print(F ("Load S88 : M ") );
   DCCPP_INTERFACE.print(M);
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
 }
 
@@ -335,9 +306,6 @@ void S88::store() {
   DCCPP_INTERFACE.print(F ("Store S88 <N ") );
   DCCPP_INTERFACE.print(N);
   DCCPP_INTERFACE.print(">");
-#if !defined(USE_ETHERNET)
-  DCCPP_INTERFACE.println("");
-#endif
 #endif
 }
 #endif  // USE_EEPROM

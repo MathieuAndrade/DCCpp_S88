@@ -37,54 +37,6 @@ void TextCommand::process()
 {
   char c;
 
-#if defined(USE_ETHERNET)
-  bool html = false;
-
-  EthernetClient client = DCCPP_INTERFACE.available();
-
-  if (client)
-  {
-
-    DCCPP_INTERFACE.println(F("HTTP/1.1 200 OK"));
-    DCCPP_INTERFACE.println(F("Content-Type: text/html"));
-    DCCPP_INTERFACE.println(F("Access-Control-Allow-Origin: *"));
-    DCCPP_INTERFACE.println(F("Connection: close"));
-    DCCPP_INTERFACE.println("");
-
-    html = true; // enable SDcard html file call
-
-    while (client.connected() && client.available())
-    { // while there is data on the network
-      c = client.read();
-      if (c == '<')
-      { // start of new command
-        html = false;
-        commandString[0] = 0;
-      }
-      else if (c == '>') // end of new command
-        parse(commandString);
-      else if (strlen(commandString) < MAX_COMMAND_LENGTH) // if comandString still has space, append character just read from network
-        sprintf(commandString, "%s%c", commandString, c);  // otherwise, character is ignored (but continue to look for '<' or '>')
-    } // while
-
-    if (html == true)
-    {
-      client.print("\n<div id='prev'>&nbsp;&nbsp; Loading HTML & JSON files, please wait...</div><br>\n");
-      sprintf(commandString, "%s", "H"); // appel de ServWeb pour charger le HTML (/) et la Requete sur le fichier json des locomotives avec (<H 3>)
-      parse(commandString);
-    }
-
-#ifdef DCCPP_DEBUG_VERBOSE_MODE
-    Serial.print(F("+parse: "));
-    Serial.println(commandString); // PC
-#endif
-    // on donne le temps au client de prendre les données
-    delay(10);
-    client.stop();
-  }
-
-#else // SERIAL case
-
   while (Serial.available() > 0)
   { // while data is present on the serial line
     c = Serial.read();
@@ -126,14 +78,6 @@ void TextCommand::parse(char *com)
 
   switch (com[0])
   {
-
-    /***** SERVEUR WEB *****/
-
-#ifdef USE_ETHERNET
-  case 'H':
-    ServWeb::parse(com + 1);
-    break;
-#endif
     /***** Retro-signalisation S88 *****/
 
 #ifdef USE_S88 // decode XBPC command
@@ -498,9 +442,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print("<a");
     DCCPP_INTERFACE.print(int(DCCpp::getCurrentMain()));
     DCCPP_INTERFACE.print(">");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
     break;
 
   case 's':
@@ -524,9 +465,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
       DCCPP_INTERFACE.print("<p0>");
     else
       DCCPP_INTERFACE.print("<p1>");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
 
     for (int i = 1; i <= MAX_MAIN_REGISTERS; i++)
     {
@@ -545,9 +483,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
         DCCPP_INTERFACE.print(-DCCpp::mainRegs.speedTable[i]);
         DCCPP_INTERFACE.print(" 0>");
       }
-#if !defined(USE_ETHERNET)
-      DCCPP_INTERFACE.println("");
-#endif
     }
     DCCPP_INTERFACE.print("<iDCCpp LIBRARY BASE STATION FOR ARDUINO ");
     // DCCPP_INTERFACE.print(ARDUINO_TYPE);
@@ -560,21 +495,9 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print(" ");
     DCCPP_INTERFACE.print(__TIME__);
     DCCPP_INTERFACE.print(">");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
 
     DCCPP_INTERFACE.print("<N ");
-#if defined(USE_ETHERNET)
-    DCCPP_INTERFACE.print("ETHERNET :");
-    DCCPP_INTERFACE.print(Ethernet.localIP());
-    DCCPP_INTERFACE.print(">");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
-#else
     DCCPP_INTERFACE.println("SERIAL>");
-#endif
 
 #ifdef DCCPP_PRINT_DCCPP
 #ifdef USE_TURNOUT
@@ -610,9 +533,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print(EEStore::data.nS88);
     DCCPP_INTERFACE.print(">");
 #endif
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
     break;
 
   case 'e':
@@ -633,9 +553,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 
     EEStore::clear();
     DCCPP_INTERFACE.print("<O>");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
     break;
 #endif
 
@@ -662,49 +579,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     /// THE FOLLOWING COMMANDS ARE NOT NEEDED FOR NORMAL OPERATIONS AND ARE ONLY USED FOR TESTING AND DEBUGGING PURPOSES
     /// PLEASE SEE SPECIFIC WARNINGS IN EACH COMMAND BELOW
     ///
-
-#ifndef USE_ETHERNET
-  case 'D':
-    /**	\addtogroup commandsGroup
-    ENTER DIAGNOSTIC MODE
-    ---------------------
-
-    <b>
-    \verbatim
-    <D>
-    \endverbatim
-    </b>
-
-    changes the clock speed of the chip and the pre-scaler for the timers so that you can visually see the DCC signals flickering with an LED
-    SERIAL COMMUNICATION WILL BE INTERUPTED ONCE THIS COMMAND IS ISSUED - MUST RESET BOARD OR RE-OPEN SERIAL WINDOW TO RE-ESTABLISH COMMS
-    */
-
-    Serial.println("\nEntering Diagnostic Mode...");
-    delay(1000);
-
-    bitClear(TCCR1B, CS12); // set Timer 1 prescale=8 - SLOWS NORMAL SPEED BY FACTOR OF 8
-    bitSet(TCCR1B, CS11);
-    bitClear(TCCR1B, CS10);
-
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) // Configuration for UNO
-
-    bitSet(TCCR0B, CS02); // set Timer 0 prescale=256 - SLOWS NORMAL SPEED BY A FACTOR OF 4
-    bitClear(TCCR0B, CS01);
-    bitClear(TCCR0B, CS00);
-
-#else // Configuration for MEGA
-
-    bitClear(TCCR3B, CS32); // set Timer 3 prescale=8 - SLOWS NORMAL SPEED BY A FACTOR OF 8
-    bitSet(TCCR3B, CS31);
-    bitClear(TCCR3B, CS30);
-
-#endif
-
-    CLKPR = 0x80; // THIS SLOWS DOWN SYSYEM CLOCK BY FACTOR OF 256
-    CLKPR = 0x08; // BOARD MUST BE RESET TO RESUME NORMAL OPERATIONS
-
-    break;
-#endif
 
   case 'M':
     /**	\addtogroup commandsGroup
@@ -784,9 +658,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print("<f");
     DCCPP_INTERFACE.print((int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval));
     DCCPP_INTERFACE.print(">");
-#if !defined(USE_ETHERNET)
-    DCCPP_INTERFACE.println("");
-#endif
     break;
 #endif
 
@@ -855,4 +726,3 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#endif
