@@ -11,10 +11,6 @@ Part of DCC++ BASE STATION for the Arduino
 
 #ifdef USE_TURNOUT
 
-#ifdef VISUALSTUDIO
-#include "string.h"
-#endif
-
 #include "Turnout.h"
 #include "DCCpp_Uno.h"
 // #include "Comm.h"

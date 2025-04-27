@@ -13,9 +13,6 @@ Part of DCC++ BASE STATION for the Arduino
 #include "TextCommand.h"
 #ifdef USE_TEXTCOMMAND
 
-#ifdef VISUALSTUDIO
-#include "string.h"
-#else
 extern unsigned int __heap_start;
 extern void *__brkval;
 #endif
@@ -583,33 +580,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 
     DCCpp::progRegs.writeTextPacket(com + 1);
     break;
-
-#ifndef VISUALSTUDIO
-  case 'F':
-    /**	\addtogroup commandsGroup
-    ATTEMPTS TO DETERMINE HOW MUCH FREE SRAM IS AVAILABLE IN ARDUINO
-    ----------------------------------------------------------------
-
-    <b>
-    \verbatim
-    <F>
-    \endverbatim
-    </b>
-
-    measure amount of free SRAM memory left on the Arduino based on trick found on the Internet.
-    Useful when setting dynamic array sizes, considering the Uno only has 2048 bytes of dynamic SRAM.
-    Unfortunately not very reliable --- would be great to find a better method
-
-    returns: <b>\<f MEM\></b>
-    where MEM is the number of free bytes remaining in the Arduino's SRAM
-    */
-
-    int v;
-    DCCPP_INTERFACE.print("<f");
-    DCCPP_INTERFACE.print((int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval));
-    DCCPP_INTERFACE.print(">");
-    break;
-#endif
 
   case 'L':
     /**	\addtogroup commandsGroup

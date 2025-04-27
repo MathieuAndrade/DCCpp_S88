@@ -51,9 +51,6 @@
 #include "S88.h"
 #include "DCCpp_Uno.h"
 
-#ifdef VISUALSTUDIO
-#include "string.h"
-#endif
 #ifdef USE_TEXTCOMMAND
 #include "TextCommand.h"
 #endif

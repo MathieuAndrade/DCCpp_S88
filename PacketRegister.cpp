@@ -57,9 +57,6 @@ RegisterList::RegisterList(int maxNumRegs)
 
 void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int printFlag) volatile
 {
-#ifdef VISUALSTUDIO
-  return;
-#endif
   nReg = nReg % ((maxNumRegs + 1)); // force nReg to be between 0 and maxNumRegs, inclusive
 
   while (nextReg != NULL)
