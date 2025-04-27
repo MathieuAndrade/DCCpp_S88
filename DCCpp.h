@@ -148,7 +148,7 @@ DCC++ BASE STATION in split into multiple modules, each with its own header file
 
   DCCpp_Uno:        declares required global objects and contains initial Arduino setup()
                     and Arduino loop() functions, as well as interrupt code for OC0B and OC1B.
-                    Also includes declarations of optional array of Turn-Outs and optional array of Sensors. 
+                    Also includes declarations of optional array of Turn-Outs and optional array of Sensors.
 
   TextCommand:      contains methods to read and interpret text commands from the serial/Ethernet line,
                     process those instructions, and, if necessary call appropriate Packet RegisterList methods
@@ -176,7 +176,7 @@ DCC++ BASE STATION in split into multiple modules, each with its own header file
 Complement of the documentation for this library:
 
 This library is a free interpretation of the Gregg's work to adapt it to a library, and minimize
-the needs to modify the library sources to use it. The only configuration still needed in .h file is 
+the needs to modify the library sources to use it. The only configuration still needed in .h file is
 to decide of the Ethernet interface model.
 It has been adapted to work also with Arduino Nano R3 on IDE 1.8.4 .
 
@@ -347,86 +347,83 @@ _______________
 /** @file DCCpp.h
 Main include file of the library.*/
 
-#define LIBRARY_VERSION		"VERSION DCCpp library: 1.3.2"
+#define LIBRARY_VERSION "VERSION DCCpp library: 1.3.2"
 
 ////////////////////////////////////////////////////////
 // Add a '//' at the beginning of the line to be in production mode.
-//#define DCCPP_DEBUG_MODE
+// #define DCCPP_DEBUG_MODE
 
 ///////////////////////////////////////////////////////
-// Verbose mode lets you see all actions done by the 
+// Verbose mode lets you see all actions done by the
 // library, but with a real flood of text to console...
 // Has no effect if DCCPP_DEBUG_MODE is not activated.
-//#define DCCPP_DEBUG_VERBOSE_MODE
+// #define DCCPP_DEBUG_VERBOSE_MODE
 
 ///////////////////////////////////////////////////////
 // The function DCCpp::printConfiguration()
 // is very heavy in program memory. So to avoid problems
 // you can make this function available by uncomment the next line, only when necessary.
-//#define DCCPP_PRINT_DCCPP
+// #define DCCPP_PRINT_DCCPP
 
 //  Inclusion area
 //
-//#define USE_EEPROM
+// #define USE_EEPROM
 #define USE_TURNOUT
-//#define USE_SENSOR    // not compatible with USE_S88
 #define USE_OUTPUT
 #define USE_S88
 #define USE_TEXTCOMMAND
-//#define USE_ETHERNET_WIZNET_5100
-//#define USE_ETHERNET_WIZNET_5500
-//#define USE_ETHERNET_WIZNET_5200
-//#define USE_ETHERNET_ENC28J60
-//#define PING_MASTER
+// #define USE_ETHERNET_WIZNET_5100
+// #define USE_ETHERNET_WIZNET_5500
+// #define USE_ETHERNET_WIZNET_5200
+// #define USE_ETHERNET_ENC28J60
+// #define PING_MASTER
 
 #ifdef DOXYGEN_SPECIFIC
-    // DO NOT CHANGE THESE LINES IN THIS BLOCK 'DOXYGEN_SPECIFIC' : Only here for documentation !
+// DO NOT CHANGE THESE LINES IN THIS BLOCK 'DOXYGEN_SPECIFIC' : Only here for documentation !
 
-    /**Comment this line to avoid using and compiling Turnout.*/
-    #define USE_TURNOUT
-    /**Comment this line to avoid using and compiling EEPROM saving.*/
-    #define USE_EEPROM
-    /**Comment this line to avoid using and compiling Outputs.*/
-    // #define USE_OUTPUT
-    /**Comment this line to avoid using and compiling Sensors.*/
-    // #define USE_SENSOR
-    /**Comment this line to avoid using and compiling S88.*/
-    #define USE_S88
-    /**Comment this line to avoid using and compiling Serial commands.*/
-    #define USE_TEXTCOMMAND
-    /**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5100 chip (Arduino Shield v1).*/
- //   #define USE_ETHERNET_WIZNET_5100
-    /**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5500 chip (Arduino Shield v2).*/
- //   #define USE_ETHERNET_WIZNET_5500
-    /**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5200 chip (Seeed Studio).*/
- //   #define USE_ETHERNET_WIZNET_5200
-    /**Comment this line to avoid using and compiling Ethernet shield using ENC28J60 chip.*/
- //   #define USE_ETHERNET_ENC28J60
+/**Comment this line to avoid using and compiling Turnout.*/
+#define USE_TURNOUT
+/**Comment this line to avoid using and compiling EEPROM saving.*/
+#define USE_EEPROM
+/**Comment this line to avoid using and compiling Outputs.*/
+// #define USE_OUTPUT
+/**Comment this line to avoid using and compiling Sensors.*/
+/**Comment this line to avoid using and compiling S88.*/
+#define USE_S88
+/**Comment this line to avoid using and compiling Serial commands.*/
+#define USE_TEXTCOMMAND
+/**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5100 chip (Arduino Shield v1).*/
+//   #define USE_ETHERNET_WIZNET_5100
+/**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5500 chip (Arduino Shield v2).*/
+//   #define USE_ETHERNET_WIZNET_5500
+/**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5200 chip (Seeed Studio).*/
+//   #define USE_ETHERNET_WIZNET_5200
+/**Comment this line to avoid using and compiling Ethernet shield using ENC28J60 chip.*/
+//   #define USE_ETHERNET_ENC28J60
 
-    #undef USE_TURNOUT
-    #undef USE_EEPROM
-    #undef USE_OUTPUT
-    #undef USE_SENSOR
-    #undef USE_TEXTCOMMAND
-    #undef USE_ETHERNET_WIZNET_5100
-    #undef USE_ETHERNET_WIZNET_5500
-    #undef USE_ETHERNET_WIZNET_5200
-    #undef USE_ETHERNET_ENC28J60
+#undef USE_TURNOUT
+#undef USE_EEPROM
+#undef USE_OUTPUT
+#undef USE_TEXTCOMMAND
+#undef USE_ETHERNET_WIZNET_5100
+#undef USE_ETHERNET_WIZNET_5500
+#undef USE_ETHERNET_WIZNET_5200
+#undef USE_ETHERNET_ENC28J60
 
-    /** If this is defined, the library will do many checks during setup and execution, and print errors, warnings and
-    information messages on console. These messages can take a lot of memory, so be careful about the free memory of
-    your program if you activate debug mode.*/
-    #define DCCPP_DEBUG_MODE
-    /** If this is defined, the Verbose mode lets you see all actions done by the  library, but with a real flood of
-    text to the console... It has no effect if DCCPP_DEBUG_MODE is not activated.*/
-    #define DCCPP_DEBUG_VERBOSE_MODE
-    /** If this is defined, the function DCCpp::showConfiguration() will become available. This is useful to try
-    to understand why something is not correctly defined.
-    This function uses a lot of memory, so activate it only if necessary, and be careful about your program's memory.
-    You can use the define PRINT_DCCPP() in your sketch instead of a call to DCCpp.showConfiguration().
-    If DCCPP_PRINT_DCCPP is not defined, PRINT_DCCPP is defined as empty, so you will not have a compilation error.*/
-    #define DCCPP_PRINT_DCCPP
-    #endif
+/** If this is defined, the library will do many checks during setup and execution, and print errors, warnings and
+information messages on console. These messages can take a lot of memory, so be careful about the free memory of
+your program if you activate debug mode.*/
+#define DCCPP_DEBUG_MODE
+/** If this is defined, the Verbose mode lets you see all actions done by the  library, but with a real flood of
+text to the console... It has no effect if DCCPP_DEBUG_MODE is not activated.*/
+#define DCCPP_DEBUG_VERBOSE_MODE
+/** If this is defined, the function DCCpp::showConfiguration() will become available. This is useful to try
+to understand why something is not correctly defined.
+This function uses a lot of memory, so activate it only if necessary, and be careful about your program's memory.
+You can use the define PRINT_DCCPP() in your sketch instead of a call to DCCpp.showConfiguration().
+If DCCPP_PRINT_DCCPP is not defined, PRINT_DCCPP is defined as empty, so you will not have a compilation error.*/
+#define DCCPP_PRINT_DCCPP
+#endif
 #endif
 
 #if defined(USE_ETHERNET_WIZNET_5100) || defined(USE_ETHERNET_WIZNET_5500) || defined(USE_ETHERNET_WIZNET_5200) || defined(USE_ETHERNET_ENC28J60)
@@ -449,9 +446,6 @@ Main include file of the library.*/
 #endif
 #ifdef USE_OUTPUT
 #include "Outputs.h"
-#endif
-#ifdef USE_SENSOR
-#include "Sensor.h"
 #endif
 #ifdef USE_S88
 #include "S88.h"

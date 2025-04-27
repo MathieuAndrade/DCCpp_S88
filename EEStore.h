@@ -14,22 +14,20 @@ Part of DCC++ BASE STATION for the Arduino
 
 #ifdef USE_EEPROM
 
-#define  EESTORE_ID "DCC++"
+#define EESTORE_ID "DCC++"
 
 /** This structure stores data of EEStore class.*/
-struct EEStoreData{
-  char id[sizeof(EESTORE_ID)+1]; /**< String used to check if the data already in the EEPROM was saved by DCC++.*/
+struct EEStoreData
+{
+  char id[sizeof(EESTORE_ID) + 1]; /**< String used to check if the data already in the EEPROM was saved by DCC++.*/
 #ifdef USE_TURNOUT
-  int nTurnouts;	/**< Turnouts number.*/
-#endif
-#ifdef USE_SENSOR
-  int nSensors;	/**< Sensors number.*/
+  int nTurnouts; /**< Turnouts number.*/
 #endif
 #ifdef USE_OUTPUT
-  int nOutputs;	/**< Outputs number.*/
+  int nOutputs; /**< Outputs number.*/
 #endif
 #ifdef USE_S88
-  int nS88;  /**< number of S88 byte-modules .*/
+  int nS88; /**< number of S88 byte-modules .*/
 #endif
 };
 
@@ -43,13 +41,14 @@ The data is saved from byte 0 of EEPROM. The content is :
 +--------------------------------------+----------+---------+---------+---------+
 \endverbatim
 */
-struct EEStore{
-  static EEStore *eeStore;	/**< Static pointer to an instance of EEStore class.*/
-  static EEStoreData data;	/**< Data associated with this class.*/
-  static int eeAddress;	/**< Current EEPROM address. Used during storage.*/
+struct EEStore
+{
+  static EEStore *eeStore; /**< Static pointer to an instance of EEStore class.*/
+  static EEStoreData data; /**< Data associated with this class.*/
+  static int eeAddress;    /**< Current EEPROM address. Used during storage.*/
 
-  static void init();	/**< Clear all the EEPROM memory.*/
-  static void reset();	/**< Restart the eeAddress pointer at the end of the EEStoreData.*/
+  static void init();  /**< Clear all the EEPROM memory.*/
+  static void reset(); /**< Restart the eeAddress pointer at the end of the EEStoreData.*/
   /** Gets the current EEPROM address.
   @return current position in EEPROM memory.
   */
@@ -62,8 +61,8 @@ struct EEStore{
   @return True if the total number of accessories have changed.
   */
   static bool needsRefreshing();
-  static void store();	/**< Stores the current state of all accessories.*/
-  static void clear();	/**< Clears the content of the EEStoreData structure. This function does not change the EEPROM.*/
+  static void store(); /**< Stores the current state of all accessories.*/
+  static void clear(); /**< Clears the content of the EEStoreData structure. This function does not change the EEPROM.*/
 };
 
 #endif

@@ -328,38 +328,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     break;
 #endif
 
-#ifdef USE_SENSOR
-
-  case 'S':
-    /*
-     *   *** SEE SENSOR.CPP FOR COMPLETE INFO ON THE DIFFERENT VARIATIONS OF THE "S" COMMAND
-     *   USED TO CREATE/EDIT/REMOVE/SHOW SENSOR DEFINITIONS
-     */
-    Sensor::parse(com + 1);
-    break;
-
-#ifdef DCCPP_PRINT_DCCPP
-#ifndef USE_S88
-  case 'Q':
-    /**	\addtogroup commandsGroup
-    SHOW STATUS OF ALL SENSORS
-    --------------------------
-
-    <b>
-    \verbatim
-    <Q>
-    \endverbatim
-    </b>
-
-    returns: the status of each sensor ID in the form <b>\<Q ID\></b> (active) or <b>\<q ID\></b> (not active)
-    */
-
-    Sensor::status();
-    break;
-#endif
-#endif
-#endif
-
   case 'w':
 
     /**	\addtogroup commandsGroup
@@ -626,9 +594,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 #ifdef USE_OUTPUT
     Output::show();
 #endif
-#ifdef USE_SENSOR
-    Sensor::show();
-#endif
 #endif
     break;
 
@@ -653,10 +618,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print("<e ");
 #ifdef USE_TURNOUT
     DCCPP_INTERFACE.print(EEStore::data.nTurnouts);
-    DCCPP_INTERFACE.print(" ");
-#endif
-#ifdef USE_SENSOR
-    DCCPP_INTERFACE.print(EEStore::data.nSensors);
     DCCPP_INTERFACE.print(" ");
 #endif
 #ifdef USE_OUTPUT
