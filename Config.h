@@ -48,29 +48,6 @@ Part of DCC++ BASE STATION for the Arduino
 
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////
-// SELECT MOTOR SHIELD
-/////////////////////////////////////////////////////////////////////////////////////
-
-/** Interruption pin for main track.*/
-#define MOTOR_SHIELD_SIGNAL_ENABLE_PIN_MAIN 3
-#define MOTOR_SHIELD_SIGNAL_ENABLE_PIN_PROG 11
-
-#define MOTOR_SHIELD_CURRENT_MONITOR_PIN_MAIN A0
-#define MOTOR_SHIELD_CURRENT_MONITOR_PIN_PROG A1
-
-#define MOTOR_SHIELD_DIRECTION_MOTOR_CHANNEL_PIN_A 12
-#define MOTOR_SHIELD_DIRECTION_MOTOR_CHANNEL_PIN_B 13
-
-#define POLOLU_SIGNAL_ENABLE_PIN_MAIN 9
-#define POLOLU_SIGNAL_ENABLE_PIN_PROG 11
-
-#define POLOLU_CURRENT_MONITOR_PIN_MAIN A0
-#define POLOLU_CURRENT_MONITOR_PIN_PROG A1
-
-#define POLOLU_DIRECTION_MOTOR_CHANNEL_PIN_A 7
-#define POLOLU_DIRECTION_MOTOR_CHANNEL_PIN_B 8
-
 struct DCCppConfig
 {
     static byte SignalEnablePinMain; // PWM : *_SIGNAL_ENABLE_PIN_MAIN
