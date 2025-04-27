@@ -506,56 +506,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 #endif
     break;
 
-#ifdef USE_EEPROM
-  case 'E':
-    /**	\addtogroup commandsGroup
-    STORE SETTINGS IN EEPROM
-    ------------------------
-
-    <b>
-    \verbatim
-    <E>
-    \endverbatim
-    </b>
-
-    Stores settings for turnouts and sensors EEPROM
-
-    returns: <b>\<e nTurnouts nSensors\></b>
-    */
-
-    EEStore::store();
-    DCCPP_INTERFACE.print("<e ");
-#ifdef USE_TURNOUT
-    DCCPP_INTERFACE.print(EEStore::data.nTurnouts);
-    DCCPP_INTERFACE.print(" ");
-#endif
-#ifdef USE_S88
-    DCCPP_INTERFACE.print(EEStore::data.nS88);
-    DCCPP_INTERFACE.print(">");
-#endif
-    break;
-
-  case 'e':
-    /**	\addtogroup commandsGroup
-    CLEAR SETTINGS IN EEPROM
-    ------------------------
-
-    <b>
-    \verbatim
-    <e>
-    \endverbatim
-    </b>
-
-    clears settings for Turnouts in EEPROM
-
-    returns: <b>\<O\></b>
-    */
-
-    EEStore::clear();
-    DCCPP_INTERFACE.print("<O>");
-    break;
-#endif
-
   case ' ':
     /**	\addtogroup commandsGroup
     PRINT CARRIAGE RETURN IN SERIAL MONITOR WINDOW
@@ -725,4 +675,3 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 }; // SerialCommand::parse
 
 ///////////////////////////////////////////////////////////////////////////////
-

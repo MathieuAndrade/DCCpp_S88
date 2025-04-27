@@ -16,11 +16,12 @@ Part of DCC++ BASE STATION for the Arduino
 #include "Arduino.h"
 
 /** Data associated to each Turnout.*/
-struct TurnoutData {
-  byte tStatus;			/**< Current status of the turnout : 0 for Off, 1 for On.*/
-  byte subAddress;		/**< The sub-address of the decoder controlling this turnout (0-3).*/
-  int id;				/**< The numeric ID (0-32767) of the turnout to control.*/
-  int address;  		/**< The primary address of the decoder controlling this turnout (0-511).*/
+struct TurnoutData
+{
+	byte tStatus;	 /**< Current status of the turnout : 0 for Off, 1 for On.*/
+	byte subAddress; /**< The sub-address of the decoder controlling this turnout (0-3).*/
+	int id;			 /**< The numeric ID (0-32767) of the turnout to control.*/
+	int address;	 /**< The primary address of the decoder controlling this turnout (0-511).*/
 };
 
 /**	\addtogroup commandsGroup
@@ -111,11 +112,11 @@ If you later make edits/additions/deletions to the turnout definitions, you must
 new definitions updated in the EEPROM.  You can also clear everything stored in the EEPROM by invoking the <b>\<e\></b> command.
 
 Without	TextCommand, this is a classic C++ usage. An instance of the structure is created by the user,
-and functions like begin() and activate() can be applied on this instance. 
-load() and store() of the class can still be used (if USE_EEPROM is activated).
+and functions like begin() and activate() can be applied on this instance.
 */
-struct Turnout{
-	struct TurnoutData data;	/**< Data associated to this output.*/
+struct Turnout
+{
+	struct TurnoutData data; /**< Data associated to this output.*/
 
 	/** Initialize the turnout created by regular C++ instantiation.
 	@param id The numeric ID (0-32767) of the sensor.
@@ -136,30 +137,30 @@ struct Turnout{
 	*/
 	void activate(int s = 1);
 	/** Inactivate the turnout.
-	*/
+	 */
 	inline void inactivate() { activate(0); }
 	/** Checks if the output is activated or not.
 	@return True if the output is activated. Otherwise false (of course...).
 	*/
 	inline bool isActivated() { return this->data.tStatus > 0; }
 
-#if defined(USE_EEPROM)	|| defined(USE_TEXTCOMMAND)
-	static Turnout *firstTurnout;	/**< Address of the first object of this class. NULL means empty list of turnouts. Do not change it !*/
-	Turnout *nextTurnout;			/**< Address of the next object of this class. NULL means end of the list of turnouts. Do not change it !*/
+#if defined(USE_TEXTCOMMAND)
+	static Turnout *firstTurnout; /**< Address of the first object of this class. NULL means empty list of turnouts. Do not change it !*/
+	Turnout *nextTurnout;		  /**< Address of the next object of this class. NULL means end of the list of turnouts. Do not change it !*/
 	/** Get a particular turnout.
 	@param id	The numeric ID (0-32767) of the turnout.
 	@return The found turnout or NULL if not found.
-	@remark Only available when USE_EEPROM or USE_TEXTCOMMAND is defined.
+	@remark Only available when USE_TEXTCOMMAND is defined.
 	*/
-	static Turnout* get(int id);
+	static Turnout *get(int id);
 	/** Removes a particular turnout.
 	@param id	The numeric ID (0-32767) of the turnout.
-	@remark Only available when USE_EEPROM or USE_TEXTCOMMAND is defined.
+	@remark Only available when USE_TEXTCOMMAND is defined.
 	*/
 	static void remove(int id);
 	/** Get the total number of turnouts.
 	@return Number of turnouts.
-	@remark Only available when USE_EEPROM or USE_TEXTCOMMAND is defined.
+	@remark Only available when USE_TEXTCOMMAND is defined.
 	*/
 	static int count();
 
@@ -168,19 +169,6 @@ struct Turnout{
 	@remark Only available when DCCPP_PRINT_DCCPP is defined.
 	*/
 	static void show();
-#endif
-
-#if defined(USE_EEPROM)
-	int eepromPos;	/**< EEPROM starting address for this Turnout storage.*/
-
-	/** Load the content of all turnouts from EEPROM.
-	@remark Only available when USE_EEPROM is defined.
-	*/
-	static void load();
-	/** Store the content of all turnouts in EEPROM.
-	@remark Only available when USE_EEPROM is defined.
-	*/
-	static void store();
 #endif
 
 #endif
@@ -202,6 +190,6 @@ struct Turnout{
 #endif
 
 }; // Turnout
-  
+
 #endif
 #endif

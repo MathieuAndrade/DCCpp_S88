@@ -23,17 +23,12 @@ Part of DCC++ BASE STATION for the Arduino
 #include "TextCommand.h"
 #endif
 
-#ifdef USE_EEPROM
-#include "EEStore.h"
-#include <EEPROM.h>
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void Turnout::begin(int id, int add, int subAdd)
 {
-#if defined(USE_EEPROM) || defined(USE_TEXTCOMMAND)
-#if defined(USE_EEPROM) && defined(DCCPP_DEBUG_MODE)
+#if defined(USE_TEXTCOMMAND)
+#if defined(DCCPP_DEBUG_MODE)
 	if (strncmp(EEStore::data.id, EESTORE_ID, sizeof(EESTORE_ID)) != 0)
 	{ // check to see that eeStore contains valid DCC++ ID
 		DCCPP_INTERFACE.println(F("Turnout::begin() must be called BEFORE DCCpp.begin() !"));
@@ -76,14 +71,6 @@ void Turnout::activate(int s)
 {
 	data.tStatus = (s > 0); // if s>0 set turnout=ON, else if zero or negative set turnout=OFF
 	DCCpp::mainRegs.setAccessory(this->data.address, this->data.subAddress, this->data.tStatus);
-#ifdef USE_EEPROM
-	if (this->eepromPos > 0)
-#ifdef VISUALSTUDIO
-		EEPROM.put(this->eepromPos, (void *)&(this->data.tStatus), sizeof(int)); // ArduiEmulator version...
-#else
-		EEPROM.put(this->eepromPos, this->data.tStatus);
-#endif
-#endif
 #ifdef USE_TEXTCOMMAND
 	DCCPP_INTERFACE.print("<H");
 	DCCPP_INTERFACE.print(data.id);
@@ -95,7 +82,7 @@ void Turnout::activate(int s)
 #endif
 }
 
-#if defined(USE_EEPROM) || defined(USE_TEXTCOMMAND)
+#if defined(USE_TEXTCOMMAND)
 ///////////////////////////////////////////////////////////////////////////////
 
 Turnout *Turnout::get(int id)
@@ -146,61 +133,6 @@ int Turnout::count()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-#ifdef USE_EEPROM
-void Turnout::load()
-{
-	struct TurnoutData data;
-	Turnout *tt;
-
-	for (int i = 0; i < EEStore::data.nTurnouts; i++)
-	{
-#ifdef VISUALSTUDIO
-		EEPROM.get(EEStore::pointer(), (void *)&data, sizeof(TurnoutData));
-#else
-		EEPROM.get(EEStore::pointer(), data);
-#endif
-#if defined(USE_TEXTCOMMAND)
-		tt = create(data.id, data.address, data.subAddress);
-#else
-		tt = get(data.id);
-#ifdef DCCPP_DEBUG_MODE
-		if (tt == NULL)
-			DCCPP_INTERFACE.println(F("Turnout::begin() must be called BEFORE Turnout::load() !"));
-		else
-#endif
-			tt->set(data.id, data.address, data.subAddress);
-#endif
-		tt->data.tStatus = data.tStatus;
-		tt->eepromPos = EEStore::pointer();
-		EEStore::advance(sizeof(tt->data));
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void Turnout::store()
-{
-	struct TurnoutData data;
-	Turnout *tt;
-
-	tt = firstTurnout;
-	EEStore::data.nTurnouts = 0;
-
-	while (tt != NULL)
-	{
-		tt->eepromPos = EEStore::pointer();
-#ifdef VISUALSTUDIO
-		EEPROM.put(EEStore::pointer(), (void *)&(tt->data), sizeof(TurnoutData)); // ArduiEmulator version...
-#else
-		EEPROM.put(EEStore::pointer(), tt->data);
-#endif
-		EEStore::advance(sizeof(tt->data));
-		tt = tt->nextTurnout;
-		EEStore::data.nTurnouts++;
-	}
-}
-#endif
 
 #endif
 
@@ -305,7 +237,7 @@ Turnout *Turnout::create(int id, int add, int subAdd)
 
 #endif // USE_TEXTCOMMAND
 
-#if defined(USE_EEPROM) || defined(USE_TEXTCOMMAND)
+#if defined(USE_TEXTCOMMAND)
 #ifdef DCCPP_PRINT_DCCPP
 
 ///////////////////////////////////////////////////////////////////////////////

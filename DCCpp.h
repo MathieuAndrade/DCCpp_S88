@@ -361,8 +361,6 @@ Main include file of the library.*/
 // #define DCCPP_PRINT_DCCPP
 
 //  Inclusion area
-//
-// #define USE_EEPROM
 #define USE_TURNOUT
 #define USE_S88
 #define USE_TEXTCOMMAND
@@ -373,8 +371,6 @@ Main include file of the library.*/
 
 /**Comment this line to avoid using and compiling Turnout.*/
 #define USE_TURNOUT
-/**Comment this line to avoid using and compiling EEPROM saving.*/
-#define USE_EEPROM
 /**Comment this line to avoid using and compiling S88.*/
 #define USE_S88
 /**Comment this line to avoid using and compiling Serial commands.*/
@@ -382,7 +378,6 @@ Main include file of the library.*/
 /**Comment this line to avoid using and compiling Ethernet shield using Wiznet 5100 chip (Arduino Shield v1).*/
 
 #undef USE_TURNOUT
-#undef USE_EEPROM
 #undef USE_TEXTCOMMAND
 
 /** If this is defined, the library will do many checks during setup and execution, and print errors, warnings and
@@ -410,9 +405,6 @@ If DCCPP_PRINT_DCCPP is not defined, PRINT_DCCPP is defined as empty, so you wil
 
 #ifdef USE_TURNOUT
 #include "Turnout.h"
-#endif
-#ifdef USE_EEPROM
-#include "EEStore.h"
 #endif
 #ifdef USE_S88
 #include "S88.h"

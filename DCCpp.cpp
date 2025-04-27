@@ -334,12 +334,6 @@ void DCCpp::begin()
     digitalWrite(SDCARD_CS, HIGH); // De-select the SD card
 #endif
 
-#ifdef USE_EEPROM
-    EEStore::init(); // initialize and load Turnout and Sensor definitions stored in EEPROM
-    if (EEStore::needsRefreshing())
-        EEStore::store();
-#endif
-
 #ifdef DCCPP_DEBUG_MODE
     // pinMode(LED_BUILTIN, OUTPUT);
     Serial.println(F("begin achieved"));
@@ -510,18 +504,6 @@ void DCCpp::showConfiguration()
     Serial.println(S88_DataL_PIN);
     Serial.print(F("S88_DataR_PIN:   "));
     Serial.println(S88_DataR_PIN);
-#endif
-
-#if defined(USE_EEPROM)
-    Serial.println(F("\n USE EEPROM:"));
-#if defined(USE_TURNOUT)
-    Serial.print(F("NUM TURNOUTS: "));
-    Serial.println(EEStore::data.nTurnouts);
-#endif
-#if defined(USE_S88)
-    Serial.print(F("     S88   M: "));
-    Serial.println(EEStore::data.nS88);
-#endif
 #endif
 
 #ifdef USE_TEXTCOMMAND
