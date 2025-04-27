@@ -9,8 +9,6 @@ COPYRIGHT (c) 2013-2020 Xavier Bouillard & Philippe Chavatte
 #define S88_h
 
 #include "DCCpp.h"
-
-#ifdef USE_S88
 #include "Arduino.h"
 
 #define USE_CDMRAIL // to be defined if needed
@@ -49,5 +47,4 @@ struct S88
 
 }; // S88
 
-#endif // USE_S88
 #endif // S88_h

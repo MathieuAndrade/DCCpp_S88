@@ -59,9 +59,7 @@ void TextCommand::parse(char *com)
   switch (com[0])
   {
     /***** Retro-signalisation S88 *****/
-
-#ifdef USE_S88 // decode XBPC command
-  case 'Q':    // <Q>
+  case 'Q': // <Q>
     com[1] = ' ';
     com[2] = '6';
     com[3] = '4';
@@ -84,7 +82,6 @@ void TextCommand::parse(char *com)
     // DCCPP_INTERFACE.print("\n<y 00000000>"); or DCCPP_INTERFACE.print("\n<y 00>");
     S88::parse(com + 1);
     break;
-#endif
 
   case 't':
     /**	\addtogroup commandsGroup

@@ -46,8 +46,6 @@
 **********************************************************************/
 
 #include "DCCpp.h"
-
-#ifdef USE_S88
 #include "S88.h"
 
 #ifdef USE_TEXTCOMMAND
@@ -265,5 +263,3 @@ void S88::parse(char *c)
     sampleRate = 48;
 }
 #endif // USE_TEXTCOMMAND
-
-#endif // USE_S88

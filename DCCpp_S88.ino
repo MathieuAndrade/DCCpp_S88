@@ -191,14 +191,6 @@ void setup()
 #if defined(ARDUINO_AVR_MEGA) || defined(ARDUINO_AVR_NANO) // if needed, E_BOOSTER_ENABLE must be defined in currentMonitor.h at line 51
   pinMode(E_BoosterIn, INPUT);
 #endif
-  /*
-  pinMode(EN_Ext, OUTPUT);
-  digitalWrite(EN_Ext, LOW);        // disable "External" power district
-  pinMode(EN_Garage, OUTPUT);
-  digitalWrite(EN_Garage, LOW);     // disable "Garage" power district
-  pinMode(EN_Depot, OUTPUT);
-  digitalWrite(EN_Depot, LOW);      // disable "Depot" power district
-*/
   // S88 setup
   // ***** WARNING: using S88 disables SENSOR routine *****
   // command described in S88.cpp line 22
@@ -206,7 +198,7 @@ void setup()
   // S88 pins are defined in S88.h . You can change any pin number to fit your need.
   // If you don't use DataR, you read all 0 on the second half of the data dump
 
-#ifdef USE_S88                      // Les pins sont déclarées dans S88.h
+  // Les pins sont déclarées dans S88.h
   pinMode(S88_LOAD_PS_PIN, OUTPUT); // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Load PIN
   pinMode(S88_Reset_PIN, OUTPUT);   // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Reset PIN
   pinMode(S88_Clock_PIN, OUTPUT);   // THIS ARDUINO OUPUT PIN MUST BE PHYSICALLY CONNECTED TO THE S88 Clock PIN
@@ -216,7 +208,6 @@ void setup()
   digitalWrite(S88_LOAD_PS_PIN, LOW);
   digitalWrite(S88_Clock_PIN, LOW);
   digitalWrite(S88_Reset_PIN, LOW);
-#endif
 
   DCCpp::begin();
   // Configuration for Arduino Mega2560 + 2 L298 + 2 MAX471. See the page 'Configuration lines' in the documentation in DCCpp.h for other samples.

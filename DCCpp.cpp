@@ -93,12 +93,10 @@ void DCCpp::loop()
         progMonitor.check();
     }
 
-#ifdef USE_S88
     if (S88::checkTime())
     { // if sufficient time has elapsed since last update, scan 8 S88 sensors in a row
         S88::check();
     }
-#endif
 }
 
 void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
