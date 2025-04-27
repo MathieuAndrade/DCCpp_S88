@@ -1,18 +1,10 @@
-/**********************************************************************
-
-CurrentMonitor.cpp
-COPYRIGHT (c) 2013-2016 Gregg E. Berman
-
-Part of DCC++ BASE STATION for the Arduino
-
-**********************************************************************/
-
 #include "Config.h"
 #include "DCCpp.h"
 #include "CurrentMonitor.h"
-long int eStopTimer = 0;
 
-///////////////////////////////////////////////////////////////////////////////
+long int CurrentMonitor::sampleTime = 0;
+
+long int eStopTimer = 0;
 
 void CurrentMonitor::begin(int pin, const char *msg, float inSampleMax)
 {
@@ -20,29 +12,36 @@ void CurrentMonitor::begin(int pin, const char *msg, float inSampleMax)
     this->msg = msg;
     this->current = 0;
     this->currentSampleMax = inSampleMax;
-} // CurrentMonitor::begin
+}
 
 boolean CurrentMonitor::checkTime()
 {
-    if (millis() - sampleTime < CURRENT_SAMPLE_TIME) // no need to check current yet
+    if (millis() - sampleTime < CURRENT_SAMPLE_TIME)
+    {
         return (false);
+    }
     sampleTime = millis();
     return (true);
-} // CurrentMonitor::checkTime
+}
 
 boolean eStop_mem = false;
 void CurrentMonitor::check()
 {
     if (this->pin == UNDEFINED_PIN)
+    {
         return;
+    }
 
     this->current = (float)(analogRead(this->pin) * CURRENT_SAMPLE_SMOOTHING + this->current * (1.0 - CURRENT_SAMPLE_SMOOTHING)); // compute new exponentially-smoothed current
 
     int signalPin = DCCppConfig::SignalEnablePinProg;
     if (signalPin == UNDEFINED_PIN)
+    {
         signalPin = DCCppConfig::SignalEnablePinMain;
+    }
 
     volatile bool powerState = (digitalRead(signalPin) == HIGH) ? true : false;
+
     if (powerState && (analogRead(EmergencyStop) < 130))
     { // low active
         DCCpp::powerOff();
@@ -50,7 +49,6 @@ void CurrentMonitor::check()
         DCCPP_INTERFACE.println(analogRead(EmergencyStop));
     }
 
-#ifdef E_BOOSTER_ENABLE
     boolean eStop = (analogRead(E_BoosterIn) < 550) ? true : false; // low active, for Booster CDE
 
     if (eStop)
@@ -88,7 +86,6 @@ void CurrentMonitor::check()
 
     eStop_mem = eStop;
 finished:
-#endif
 
     // current overload and Programming Signal is on (or could have checked Main Signal, since both are always on or off together)
     if (this->current > this->currentSampleMax && digitalRead(this->signalPin) == HIGH)
@@ -111,6 +108,4 @@ finished:
             break;
         }
     }
-} // CurrentMonitor::check
-
-long int CurrentMonitor::sampleTime = 0;
+}

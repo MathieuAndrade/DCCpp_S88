@@ -17,16 +17,22 @@ Part of DCC++ BASE STATION for the Arduino
 
 #define MAX_COMMAND_LENGTH 30
 
-/** DCC++ BASE STATION COMMUNICATES VIA THE SERIAL PORT USING SINGLE-CHARACTER TEXT COMMANDS
-WITH OPTIONAL PARAMETERS, AND BRACKETED BY < AND > SYMBOLS.  SPACES BETWEEN PARAMETERS
-ARE REQUIRED.  SPACES ANYWHERE ELSE ARE IGNORED.  A SPACE BETWEEN THE SINGLE-CHARACTER
-COMMAND AND THE FIRST PARAMETER IS ALSO NOT REQUIRED.*/
+/**
+ * DCCpp station command parser
+ * This class parses and processes commands received from the serial port.
+ * The command format is:
+ * <command> <parameter1> <parameter2> ...
+ * The command is a single character, and the parameters are space-separated values.
+ * The command and parameters are enclosed in angle brackets (< and >).
+ * Spaces between parameters are required, but spaces elsewhere are ignored.
+ * A space between the command and the first parameter is not required.
+ * The command is processed by the process() method, which is called after parsing.
+ */
 struct TextCommand
 {
   static char commandString[MAX_COMMAND_LENGTH + 1];
-  static void init(volatile RegisterList *, volatile RegisterList *, CurrentMonitor *);
   static void parse(char *);
   static void process();
-}; // TextCommand
+};
 
 #endif

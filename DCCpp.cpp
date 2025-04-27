@@ -1,20 +1,11 @@
-/*************************************************************
-project: <DCCpp library>
-author: <Thierry PARIS>
-description: <DCCpp class>
-*************************************************************/
-
 #include "DCCpp.h"
 #include "Arduino.h"
 
-// NEXT DECLARE GLOBAL OBJECTS TO PROCESS AND STORE DCC PACKETS AND MONITOR TRACK CURRENTS.
-// NOTE REGISTER LISTS MUST BE DECLARED WITH "VOLATILE" QUALIFIER TO ENSURE THEY ARE PROPERLY UPDATED BY INTERRUPT ROUTINES
+volatile RegisterList DCCpp::mainRegs(MAX_MAIN_REGISTERS);
+volatile RegisterList DCCpp::progRegs(3);
 
-volatile RegisterList DCCpp::mainRegs(MAX_MAIN_REGISTERS); // create list of registers for MAX_MAIN_REGISTER Main Track Packets
-volatile RegisterList DCCpp::progRegs(3);                  // create a shorter list of only two registers for Program Track Packets
-
-CurrentMonitor DCCpp::mainMonitor; // create monitor for current on Main Track
-CurrentMonitor DCCpp::progMonitor; // create monitor for current on Program Track
+CurrentMonitor DCCpp::mainMonitor;
+CurrentMonitor DCCpp::progMonitor;
 
 bool DCCpp::programMode;
 bool DCCpp::panicStopped;
@@ -63,18 +54,12 @@ void FunctionsState::statesSent()
         this->activeFlagsSent[i] = this->activeFlags[i];
 }
 
-// *********************************************************** end of FunctionsState
-
 // *********************************************************** DCCpp class
 
 static bool first = true;
 bool DCCpp::pingSend = false;
 long DCCpp::pingTime = 0;
 long DCCpp::pingTimeout = 4000;
-
-///////////////////////////////////////////////////////////////////////////////
-// MAIN ARDUINO LOOP
-///////////////////////////////////////////////////////////////////////////////
 
 void DCCpp::loop()
 {
@@ -86,20 +71,19 @@ void DCCpp::loop()
     }
 
     if (CurrentMonitor::checkTime())
-    { // if sufficient time has elapsed since last update, check current draw on Main and Program Tracks
+    {
         mainMonitor.check();
         progMonitor.check();
     }
 
     if (S88::checkTime())
-    { // if sufficient time has elapsed since last update, scan 8 S88 sensors in a row
+    {
         S88::check();
     }
 }
 
 void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
 {
-    DCCppConfig::DirectionMotorA = inOptionalDirectionMotor;
     DCCppConfig::SignalEnablePinMain = inSignalEnable; // PWM
     DCCppConfig::CurrentMonitorMain = inCurrentMonitor;
 
@@ -123,11 +107,6 @@ void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
 #define DCC_ONE_BIT_TOTAL_DURATION_TIMER1 1855
 #define DCC_ONE_BIT_PULSE_DURATION_TIMER1 927
-    if (DCCppConfig::DirectionMotorA != UNDEFINED_PIN)
-    {
-        pinMode(DCCppConfig::DirectionMotorA, INPUT); // ensure this pin is not active! Direction will be controlled by DCC SIGNAL instead (below)
-        digitalWrite(DCCppConfig::DirectionMotorA, LOW);
-    }
 
     if (inSignalPin != UNDEFINED_PIN)
         pinMode(inSignalPin, OUTPUT); // FOR SHIELDS, THIS ARDUINO OUTPUT PIN MUST BE PHYSICALY CONNECTED TO THE PIN FOR DIRECTION-A OF MOTOR CHANNEL-A
@@ -157,7 +136,6 @@ void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
 void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
 {
-    DCCppConfig::DirectionMotorB = inOptionalDirectionMotor;
     DCCppConfig::SignalEnablePinProg = inSignalEnable;
     DCCppConfig::CurrentMonitorProg = inCurrentMonitor;
 
@@ -180,12 +158,6 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
 #define DCC_ONE_BIT_TOTAL_DURATION_TIMER3 1855
 #define DCC_ONE_BIT_PULSE_DURATION_TIMER3 927
-
-    if (DCCppConfig::DirectionMotorB != UNDEFINED_PIN)
-    {
-        pinMode(DCCppConfig::DirectionMotorB, INPUT); // ensure this pin is not active! Direction will be controlled by DCC SIGNAL instead (below)
-        digitalWrite(DCCppConfig::DirectionMotorB, LOW);
-    }
 
     pinMode(DCC_SIGNAL_PIN_PROG, OUTPUT); // THIS ARDUINO OUTPUT PIN MUST BE PHYSICALLY CONNECTED TO THE PIN FOR DIRECTION-B OF MOTOR CHANNEL-B
 
@@ -223,9 +195,6 @@ void DCCpp::begin()
 
     DCCppConfig::SignalEnablePinProg = UNDEFINED_PIN;
     DCCppConfig::CurrentMonitorProg = UNDEFINED_PIN;
-
-    DCCppConfig::DirectionMotorA = UNDEFINED_PIN;
-    DCCppConfig::DirectionMotorB = UNDEFINED_PIN;
 
     mainMonitor.begin(UNDEFINED_PIN, "");
     progMonitor.begin(UNDEFINED_PIN, "");
@@ -532,7 +501,7 @@ void DCCpp::setTurnout(char *c)
     }
     s = strtol(c, &c, 10); // get the state (0 or 1)
 
-    m = n + 3; // simplification de la commande sans EEPROM (Lormedy)
+    m = n + 3;
 
     DCCpp::mainRegs.setAccessory((m >> 2), (m & 3), (s > 0));
     DCCPP_INTERFACE.println("<H " + String(n) + ((s == 0) ? " 0>" : " 1>"));

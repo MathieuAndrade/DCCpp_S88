@@ -1,55 +1,35 @@
-/**********************************************************************
-
-TextCommand.cpp
-COPYRIGHT (c) 2013-2016 Gregg E. Berman
-
-Part of DCC++ BASE STATION for the Arduino
-
-<Y> command to read S88 bus added by Philippe Chavatte - 01 june 2019
-
-**********************************************************************/
-
-// See TextCommand::parse() below for defined text commands.
 #include "TextCommand.h"
 
 extern unsigned int __heap_start;
 extern void *__brkval;
 
-///////////////////////////////////////////////////////////////////////////////
-
 char TextCommand::commandString[MAX_COMMAND_LENGTH + 1];
-
-///////////////////////////////////////////////////////////////////////////////
-
-void TextCommand::init(volatile RegisterList *_mRegs, volatile RegisterList *_pRegs, CurrentMonitor *_mMonitor)
-{
-  commandString[0] = 0;
-} // TextCommand:TextCommand
-
-///////////////////////////////////////////////////////////////////////////////
 
 void TextCommand::process()
 {
   char c;
 
+  // while data is present on the serial line
   while (Serial.available() > 0)
-  { // while data is present on the serial line
+  {
     c = Serial.read();
 
-    if (c == '<') // start of new command
+    // start of new command
+    if (c == '<')
       commandString[0] = 0;
     else if (c == '>')
-    { // end of new command
-
+    {
+      // end of new command
       parse(commandString);
     }
-    else if (strlen(commandString) < MAX_COMMAND_LENGTH) // if commandString still has space, append character just read from serial line
-      sprintf(commandString, "%s%c", commandString, c);  // otherwise, character is ignored (but continue to look for '<' or '>')
-  } // while
-
-} // TextCommand:process
-
-///////////////////////////////////////////////////////////////////////////////
+    else if (strlen(commandString) < MAX_COMMAND_LENGTH)
+    {
+      // if commandString still has space, append character just read from serial line
+      // otherwise, character is ignored (but continue to look for '<' or '>')
+      sprintf(commandString, "%s%c", commandString, c);
+    }
+  }
+}
 
 void TextCommand::parse(char *com)
 {

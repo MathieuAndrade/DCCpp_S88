@@ -17,9 +17,6 @@ byte DCCppConfig::CurrentMonitorMain = UNDEFINED_PIN;
 byte DCCppConfig::SignalEnablePinProg = UNDEFINED_PIN;
 byte DCCppConfig::CurrentMonitorProg = UNDEFINED_PIN;
 
-byte DCCppConfig::DirectionMotorA = UNDEFINED_PIN;
-byte DCCppConfig::DirectionMotorB = UNDEFINED_PIN;
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void Register::initPackets()

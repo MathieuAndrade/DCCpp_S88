@@ -1,12 +1,3 @@
-/**********************************************************************
-
-PacketRegister.h
-COPYRIGHT (c) 2013-2016 Gregg E. Berman
-
-Part of DCC++ BASE STATION for the Arduino
-
-**********************************************************************/
-
 #ifndef PacketRegister_h
 #define PacketRegister_h
 
@@ -23,7 +14,7 @@ struct Packet
 {
   byte buf[10];
   byte nBits;
-}; // Packet
+};
 
 struct Register
 {
@@ -31,10 +22,8 @@ struct Register
   Packet *activePacket;
   Packet *updatePacket;
   void initPackets();
-}; // Register
+};
 
-/** Define a series of registers that can be sequentially accessed over a loop to generate a repeating series of DCC Packets.
- */
 struct RegisterList
 {
   int maxNumRegs;
