@@ -39,9 +39,6 @@ void EEStore::init()
 #ifdef USE_TURNOUT
     data.nTurnouts = 0;
 #endif
-#ifdef USE_OUTPUT
-    data.nOutputs = 0;
-#endif
 #ifdef USE_S88
     data.nS88 = 0;
 #endif
@@ -56,9 +53,6 @@ void EEStore::init()
 #ifdef USE_TURNOUT
   Turnout::load(); // load turnout definitions
 #endif
-#ifdef USE_OUTPUT
-  Output::load(); // load output definitions
-#endif
 #ifdef USE_S88
   S88::load(); // load S88 definitions
 #endif
@@ -72,9 +66,6 @@ void EEStore::clear()
   sprintf(data.id, EESTORE_ID); // create blank eeStore structure (no turnouts, no sensors) and save it back to EEPROM
 #ifdef USE_TURNOUT
   data.nTurnouts = 0;
-#endif
-#ifdef USE_OUTPUT
-  data.nOutputs = 0;
 #endif
 #ifdef USE_S88
   data.nS88 = 0;
@@ -94,9 +85,6 @@ void EEStore::store()
 #ifdef USE_TURNOUT
   Turnout::store();
 #endif
-#ifdef USE_OUTPUT
-  Output::store();
-#endif
 #ifdef USE_S88
   S88::store();
 #endif
@@ -113,10 +101,6 @@ bool EEStore::needsRefreshing()
 {
 #ifdef USE_TURNOUT
   if (data.nTurnouts != Turnout::count())
-    return true;
-#endif
-#ifdef USE_OUTPUT
-  if (data.nOutputs != Output::count())
     return true;
 #endif
 #ifdef USE_S88

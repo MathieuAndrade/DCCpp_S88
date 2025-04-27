@@ -369,7 +369,6 @@ Main include file of the library.*/
 //
 // #define USE_EEPROM
 #define USE_TURNOUT
-#define USE_OUTPUT
 #define USE_S88
 #define USE_TEXTCOMMAND
 // #define USE_ETHERNET_WIZNET_5100
@@ -385,9 +384,6 @@ Main include file of the library.*/
 #define USE_TURNOUT
 /**Comment this line to avoid using and compiling EEPROM saving.*/
 #define USE_EEPROM
-/**Comment this line to avoid using and compiling Outputs.*/
-// #define USE_OUTPUT
-/**Comment this line to avoid using and compiling Sensors.*/
 /**Comment this line to avoid using and compiling S88.*/
 #define USE_S88
 /**Comment this line to avoid using and compiling Serial commands.*/
@@ -403,7 +399,6 @@ Main include file of the library.*/
 
 #undef USE_TURNOUT
 #undef USE_EEPROM
-#undef USE_OUTPUT
 #undef USE_TEXTCOMMAND
 #undef USE_ETHERNET_WIZNET_5100
 #undef USE_ETHERNET_WIZNET_5500
@@ -443,9 +438,6 @@ If DCCPP_PRINT_DCCPP is not defined, PRINT_DCCPP is defined as empty, so you wil
 #endif
 #ifdef USE_EEPROM
 #include "EEStore.h"
-#endif
-#ifdef USE_OUTPUT
-#include "Outputs.h"
 #endif
 #ifdef USE_S88
 #include "S88.h"

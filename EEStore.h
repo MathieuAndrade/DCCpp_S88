@@ -23,9 +23,6 @@ struct EEStoreData
 #ifdef USE_TURNOUT
   int nTurnouts; /**< Turnouts number.*/
 #endif
-#ifdef USE_OUTPUT
-  int nOutputs; /**< Outputs number.*/
-#endif
 #ifdef USE_S88
   int nS88; /**< number of S88 byte-modules .*/
 #endif

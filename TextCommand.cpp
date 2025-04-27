@@ -317,17 +317,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     break;
 #endif
 
-#ifdef USE_OUTPUT
-
-  case 'Z':
-    /**** SEE OUTPUT.CPP FOR COMPLETE INFO ON THE DIFFERENT VARIATIONS OF THE "Z" COMMAND
-     *   USED TO CREATE / EDIT / REMOVE / SHOW OUTPUT DEFINITIONS
-     */
-
-    Output::parse(com + 1);
-    break;
-#endif
-
   case 'w':
 
     /**	\addtogroup commandsGroup
@@ -591,9 +580,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 #ifdef USE_TURNOUT
     Turnout::show();
 #endif
-#ifdef USE_OUTPUT
-    Output::show();
-#endif
 #endif
     break;
 
@@ -618,10 +604,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print("<e ");
 #ifdef USE_TURNOUT
     DCCPP_INTERFACE.print(EEStore::data.nTurnouts);
-    DCCPP_INTERFACE.print(" ");
-#endif
-#ifdef USE_OUTPUT
-    DCCPP_INTERFACE.print(EEStore::data.nOutputs);
     DCCPP_INTERFACE.print(" ");
 #endif
 #ifdef USE_S88
