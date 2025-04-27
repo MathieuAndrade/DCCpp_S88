@@ -187,10 +187,8 @@ void setup()
   pinMode(4, INPUT_PULLUP);  // disable SD card until initialisation
   pinMode(10, INPUT_PULLUP); // disable Ethernet until initialisation
   pinMode(EmergencyStop, INPUT_PULLUP);
-
-#if defined(ARDUINO_AVR_MEGA) || defined(ARDUINO_AVR_NANO) // if needed, E_BOOSTER_ENABLE must be defined in currentMonitor.h at line 51
   pinMode(E_BoosterIn, INPUT);
-#endif
+
   // S88 setup
   // ***** WARNING: using S88 disables SENSOR routine *****
   // command described in S88.cpp line 22
