@@ -363,11 +363,11 @@ Main include file of the library.*/
 // The function DCCpp::printConfiguration()
 // is very heavy in program memory. So to avoid problems
 // you can make this function available by uncomment the next line, only when necessary.
-// #define DCCPP_PRINT_DCCPP
+//#define DCCPP_PRINT_DCCPP
 
 //  Inclusion area
 //
-#define USE_EEPROM
+//#define USE_EEPROM
 #define USE_TURNOUT
 //#define USE_SENSOR    // not compatible with USE_S88
 #define USE_OUTPUT

@@ -26,13 +26,15 @@ char TextCommand::commandString[MAX_COMMAND_LENGTH + 1];
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextCommand::init(volatile RegisterList *_mRegs, volatile RegisterList *_pRegs, CurrentMonitor *_mMonitor) {
+void TextCommand::init(volatile RegisterList *_mRegs, volatile RegisterList *_pRegs, CurrentMonitor *_mMonitor)
+{
   commandString[0] = 0;
 } // TextCommand:TextCommand
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextCommand::process() {
+void TextCommand::process()
+{
   char c;
 
 #if defined(USE_ETHERNET)
@@ -40,7 +42,8 @@ void TextCommand::process() {
 
   EthernetClient client = DCCPP_INTERFACE.available();
 
-  if (client) {
+  if (client)
+  {
 
     DCCPP_INTERFACE.println(F("HTTP/1.1 200 OK"));
     DCCPP_INTERFACE.println(F("Content-Type: text/html"));
@@ -50,18 +53,22 @@ void TextCommand::process() {
 
     html = true; // enable SDcard html file call
 
-    while (client.connected() && client.available()) { // while there is data on the network
+    while (client.connected() && client.available())
+    { // while there is data on the network
       c = client.read();
-      if (c == '<') { // start of new command
+      if (c == '<')
+      { // start of new command
         html = false;
         commandString[0] = 0;
-      } else if (c == '>') // end of new command
+      }
+      else if (c == '>') // end of new command
         parse(commandString);
       else if (strlen(commandString) < MAX_COMMAND_LENGTH) // if comandString still has space, append character just read from network
         sprintf(commandString, "%s%c", commandString, c);  // otherwise, character is ignored (but continue to look for '<' or '>')
-    }                                                      // while
+    } // while
 
-    if (html == true) {
+    if (html == true)
+    {
       client.print("\n<div id='prev'>&nbsp;&nbsp; Loading HTML & JSON files, please wait...</div><br>\n");
       sprintf(commandString, "%s", "H"); // appel de ServWeb pour charger le HTML (/) et la Requete sur le fichier json des locomotives avec (<H 3>)
       parse(commandString);
@@ -78,7 +85,8 @@ void TextCommand::process() {
 
 #else // SERIAL case
 
-  while (Serial.available() > 0) { // while data is present on the serial line
+  while (Serial.available() > 0)
+  { // while data is present on the serial line
     c = Serial.read();
 
 #ifdef DCCPP_DEBUG_VERBOSE_MODE
@@ -87,7 +95,8 @@ void TextCommand::process() {
 
     if (c == '<') // start of new command
       commandString[0] = 0;
-    else if (c == '>') { // end of new command
+    else if (c == '>')
+    { // end of new command
 
 #ifdef DCCPP_DEBUG_VERBOSE_MODE
       Serial.println("");
@@ -96,9 +105,10 @@ void TextCommand::process() {
 #endif
 
       parse(commandString);
-    } else if (strlen(commandString) < MAX_COMMAND_LENGTH) // if commandString still has space, append character just read from serial line
-      sprintf(commandString, "%s%c", commandString, c);    // otherwise, character is ignored (but continue to look for '<' or '>')
-  }                                                        // while
+    }
+    else if (strlen(commandString) < MAX_COMMAND_LENGTH) // if commandString still has space, append character just read from serial line
+      sprintf(commandString, "%s%c", commandString, c);  // otherwise, character is ignored (but continue to look for '<' or '>')
+  } // while
 
 #endif
 
@@ -106,14 +116,16 @@ void TextCommand::process() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextCommand::parse(char *com) {
+void TextCommand::parse(char *com)
+{
 
 #ifdef DCCPP_DEBUG_VERBOSE_MODE
   Serial.print(com[0]);
   Serial.println(F(" command"));
 #endif
 
-  switch (com[0]) {
+  switch (com[0])
+  {
 
     /***** SERVEUR WEB *****/
 
@@ -178,6 +190,7 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 */
 
     DCCpp::mainRegs.setThrottle(com + 1);
+    DCCpp::progRegs.setThrottle(com + 1);
     break;
 
   case 'f':
@@ -225,6 +238,7 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     */
 
     DCCpp::mainRegs.setFunction(com + 1);
+    DCCpp::progRegs.setFunction(com + 1);
     break;
 
   case 'a':
@@ -557,16 +571,20 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.println("");
 #endif
 
-    for (int i = 1; i <= MAX_MAIN_REGISTERS; i++) {
+    for (int i = 1; i <= MAX_MAIN_REGISTERS; i++)
+    {
       if (DCCpp::mainRegs.speedTable[i] == 0)
         continue;
       DCCPP_INTERFACE.print("<T");
       DCCPP_INTERFACE.print(i);
       DCCPP_INTERFACE.print(" ");
-      if (DCCpp::mainRegs.speedTable[i] > 0) {
+      if (DCCpp::mainRegs.speedTable[i] > 0)
+      {
         DCCPP_INTERFACE.print(DCCpp::mainRegs.speedTable[i]);
         DCCPP_INTERFACE.print(" 1>");
-      } else {
+      }
+      else
+      {
         DCCPP_INTERFACE.print(-DCCpp::mainRegs.speedTable[i]);
         DCCPP_INTERFACE.print(" 0>");
       }
@@ -845,7 +863,8 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     */
 
     DCCPP_INTERFACE.println("");
-    for (Register *p = DCCpp::mainRegs.reg; p <= DCCpp::mainRegs.maxLoadedReg; p++) {
+    for (Register *p = DCCpp::mainRegs.reg; p <= DCCpp::mainRegs.maxLoadedReg; p++)
+    {
       DCCPP_INTERFACE.print("M");
       DCCPP_INTERFACE.print((int)(p - DCCpp::mainRegs.reg));
       DCCPP_INTERFACE.print(":\t");
@@ -855,13 +874,15 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
       DCCPP_INTERFACE.print("\t");
       DCCPP_INTERFACE.print(p->activePacket->nBits);
       DCCPP_INTERFACE.print("\t");
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 10; i++)
+      {
         DCCPP_INTERFACE.print(p->activePacket->buf[i], HEX);
         DCCPP_INTERFACE.print("\t");
       }
       DCCPP_INTERFACE.println("");
     }
-    for (Register *p = DCCpp::progRegs.reg; p <= DCCpp::progRegs.maxLoadedReg; p++) {
+    for (Register *p = DCCpp::progRegs.reg; p <= DCCpp::progRegs.maxLoadedReg; p++)
+    {
       DCCPP_INTERFACE.print("P");
       DCCPP_INTERFACE.print((int)(p - DCCpp::progRegs.reg));
       DCCPP_INTERFACE.print(":\t");
@@ -871,7 +892,8 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
       DCCPP_INTERFACE.print("\t");
       DCCPP_INTERFACE.print(p->activePacket->nBits);
       DCCPP_INTERFACE.print("\t");
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 10; i++)
+      {
         DCCPP_INTERFACE.print(p->activePacket->buf[i], HEX);
         DCCPP_INTERFACE.print("\t");
       }
@@ -886,8 +908,8 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     break;
 
   } // switch
-};  // SerialCommand::parse
+}; // SerialCommand::parse
 
-  ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 #endif

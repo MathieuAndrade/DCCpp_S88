@@ -279,6 +279,7 @@ void S88::parse(char *c) {
 }
 #endif  // USE_TEXTCOMMAND
 
+#ifdef USE_EEPROM
 //////////////////////////////////////////////////////////////////////////////
 
 int S88::count() {
@@ -289,7 +290,6 @@ int S88::count() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef USE_EEPROM
 unsigned int EEPROM_S88Address = 4088;    // address where is stored the length of your S88 bus using 2 bytes
 void S88::load() {
   struct S88Data data;
