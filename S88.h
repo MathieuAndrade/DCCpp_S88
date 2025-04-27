@@ -40,10 +40,8 @@ struct S88
 
   static void check();
 
-#if defined(USE_TEXTCOMMAND)
   /** Do command according to the given command string. */
   static void parse(char *c); // if different Y commands available
-#endif
 
 }; // S88
 

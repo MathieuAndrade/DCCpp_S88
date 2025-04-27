@@ -121,15 +121,7 @@ A7  E_BoosterIn                     E_BoosterIn                     Stop == 0, N
 // ***** Pour utiliser CDM-Rail avec le bus S88, dé-commenter la ligne 16 de S88.h *****
 
 // ***** Pour activer le bouton d'arret d'urgence sur A5, placer un bouton poussoir connecté avec la masse
-#define EmergencyStop A5 // also defined in CurrentMonitor.h line 52
-#ifdef ARDUINO_AVR_MEGA
 #define E_BoosterIn A7 // also defined in CurrentMonitor.h line 50-51
-#endif
-
-// enable serial communication
-#ifndef USE_TEXTCOMMAND
-#error To be able to compile this sample,the line #define USE_TEXTCOMMAND must be uncommented in DCCpp.h
-#endif
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Analog

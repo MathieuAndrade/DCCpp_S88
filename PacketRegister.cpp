@@ -154,16 +154,11 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 
   loadPacket(nReg, b, nB, 0, 1);
 
-#if defined(USE_TEXTCOMMAND)
   answerString = String("<T") + String(nReg) + String(" ") + String(cab) + String(" ") + String(tSpeed) + String(" ") + String(tDirection) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#endif
-  speedTable[nReg] = tDirection == 1 ? tSpeed : -tSpeed;
-  addrTable[nReg] = cab;
 
 } // RegisterList::setThrottle(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::setThrottle(char *s) volatile
 {
   int nReg;
@@ -178,7 +173,6 @@ void RegisterList::setThrottle(char *s) volatile
 
   this->setThrottle(nReg, cab, tSpeed, tDirection);
 } // RegisterList::setThrottle(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -202,10 +196,8 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
     b[nB++] = eByte;
   }
 
-#if defined(USE_TEXTCOMMAND)
   answerString = String("<F") + String(nReg) + String(" ") + String(cab) + String(" ") + String(fByte) + String(" ") + String(eByte) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#endif
   /* NMRA DCC norm ask for two DCC packets instead of only one:
   "Command Stations that generate these packets, and which are not periodically refreshing these functions,
   must send at least two repetitions of these commands when any function state is changed."
@@ -214,7 +206,6 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
   loadPacket(nReg, b, nB, 4, 1);
 } // RegisterList::setFunction(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::setFunction(char *s) volatile
 {
   int cab;
@@ -233,7 +224,6 @@ void RegisterList::setFunction(char *s) volatile
   this->setFunction(0, cab, fByte, eByte); // TODO : nReg 0 is not valid !
 
 } // RegisterList::setFunction(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -248,7 +238,6 @@ void RegisterList::setAccessory(int aAdd, int aNum, int activate) volatile
 
 } // RegisterList::setAccessory(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::setAccessory(char *s) volatile
 {
   int aAdd;     // the accessory address (0-511 = 9 bits)
@@ -267,8 +256,6 @@ void RegisterList::setAccessory(char *s) volatile
 
 } // RegisterList::setAccessory(string)
 
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void RegisterList::setExtendedAccessory(int aAdd, int val) volatile
@@ -283,7 +270,6 @@ void RegisterList::setExtendedAccessory(int aAdd, int val) volatile
 
 } // RegisterList::setExtendedAccessory(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::setExtendedAccessory(char *s) volatile
 {
   int aAdd; // the accessory address (1-2044 = 11 bits)
@@ -301,8 +287,6 @@ void RegisterList::setExtendedAccessory(char *s) volatile
 
 } // RegisterList::setExtendedAccessory(string)
 
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile
@@ -318,7 +302,6 @@ void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile
 
 } // RegisterList::writeTextPacket(bytes)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::writeTextPacket(char *s) volatile
 {
   int nReg;
@@ -330,7 +313,6 @@ void RegisterList::writeTextPacket(char *s) volatile
   this->writeTextPacket(nReg, b, nBytes);
 
 } // RegisterList::writeTextPacket(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -410,10 +392,8 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile
   if (d == 0) // verify unsuccessful
     bValue = -1;
 
-#if defined(USE_TEXTCOMMAND)
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#endif
 
   return bValue;
 }
@@ -423,7 +403,6 @@ int RegisterList::readCV(int cv, int callBack, int callBackSub) volatile
   return RegisterList::readCVraw(cv, callBack, callBackSub);
 } // RegisterList::readCV(ints)
 
-#ifdef USE_TEXTCOMMAND
 int RegisterList::readCV(char *s) volatile
 {
   int cv, callBack, callBackSub;
@@ -435,7 +414,6 @@ int RegisterList::readCV(char *s) volatile
 
   return this->readCV(cv, callBack, callBackSub);
 } // RegisterList::readCV(string)
-#endif
 
 int RegisterList::readCVmain(int cv, int callBack, int callBackSub) volatile
 {
@@ -443,7 +421,6 @@ int RegisterList::readCVmain(int cv, int callBack, int callBackSub) volatile
 
 } // RegisterList::readCV_Main()
 
-#ifdef USE_TEXTCOMMAND
 int RegisterList::readCVmain(char *s) volatile
 {
   int cv, callBack, callBackSub;
@@ -455,7 +432,6 @@ int RegisterList::readCVmain(char *s) volatile
 
   return this->readCVmain(cv, callBack, callBackSub);
 } // RegisterList::readCVmain(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -503,13 +479,10 @@ void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub
       bValue = -1;
   }
 
-#if defined(USE_TEXTCOMMAND)
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#endif
 } // RegisterList::writeCVByte(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::writeCVByte(char *s) volatile
 {
   int bValue, cv, callBack, callBackSub;
@@ -521,7 +494,6 @@ void RegisterList::writeCVByte(char *s) volatile
 
   this->writeCVByte(cv, bValue, callBack, callBackSub);
 } // RegisterList::writeCVByte(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -571,13 +543,10 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
       bValue = -1;
   }
 
-#if defined(USE_TEXTCOMMAND)
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bNum) + String(" ") + String(bValue) + String(">");
   DCCPP_INTERFACE.print((const String &)answerString);
-#endif
 } // RegisterList::writeCVBit(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::writeCVBit(char *s) volatile
 {
   int bNum, bValue, cv, callBack, callBackSub;
@@ -589,7 +558,6 @@ void RegisterList::writeCVBit(char *s) volatile
 
   this->writeCVBit(cv, bNum, bValue, callBack, callBackSub);
 } // RegisterList::writeCVBit(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -612,7 +580,6 @@ void RegisterList::writeCVByteMain(int cab, int cv, int bValue) volatile
 
 } // RegisterList::writeCVByteMain(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::writeCVByteMain(char *s) volatile
 {
   int cab;
@@ -626,7 +593,6 @@ void RegisterList::writeCVByteMain(char *s) volatile
 
   this->writeCVByteMain(cab, cv, bValue);
 } // RegisterList::writeCVByteMain(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -652,7 +618,6 @@ void RegisterList::writeCVBitMain(int cab, int cv, int bNum, int bValue) volatil
 
 } // RegisterList::writeCVBitMain(ints)
 
-#ifdef USE_TEXTCOMMAND
 void RegisterList::writeCVBitMain(char *s) volatile
 {
   int cab;
@@ -667,7 +632,6 @@ void RegisterList::writeCVBitMain(char *s) volatile
 
   this->writeCVBitMain(cab, cv, bNum, bValue);
 } // RegisterList::writeCVBitMain(string)
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 

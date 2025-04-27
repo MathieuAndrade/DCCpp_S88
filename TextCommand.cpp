@@ -11,11 +11,9 @@ Part of DCC++ BASE STATION for the Arduino
 
 // See TextCommand::parse() below for defined text commands.
 #include "TextCommand.h"
-#ifdef USE_TEXTCOMMAND
 
 extern unsigned int __heap_start;
 extern void *__brkval;
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 

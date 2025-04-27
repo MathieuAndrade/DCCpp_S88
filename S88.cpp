@@ -47,10 +47,7 @@
 
 #include "DCCpp.h"
 #include "S88.h"
-
-#ifdef USE_TEXTCOMMAND
 #include "TextCommand.h"
-#endif
 
 uint8_t M = 0;              // value read in EEPROM
 uint8_t N_size = 8;         // S88 byte size as a group of 8 sensors
@@ -203,7 +200,6 @@ void S88::check()
 //        returns: <q ID> or <Q ID>
 //
 
-#if defined(USE_TEXTCOMMAND)
 void S88::parse(char *c)
 {
   int n, f, m;
@@ -262,4 +258,3 @@ void S88::parse(char *c)
   else
     sampleRate = 48;
 }
-#endif // USE_TEXTCOMMAND

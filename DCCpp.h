@@ -4,9 +4,6 @@
 
 #define LIBRARY_VERSION "VERSION DCCpp library: 1.3.2"
 
-//  Inclusion area
-#define USE_TEXTCOMMAND
-
 #endif
 
 /////////////////////////////////////
@@ -15,9 +12,6 @@
 #include "CurrentMonitor.h"
 #include "Config.h"
 #include "S88.h"
-
-#ifdef USE_TEXTCOMMAND
 #include "TextCommand.h"
-#endif
 
 #include "DCCpp.hpp"

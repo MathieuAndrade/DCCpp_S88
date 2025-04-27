@@ -12,11 +12,6 @@ Part of DCC++ BASE STATION for the Arduino
 
 #include "DCCpp.h"
 
-/** \defgroup commandsGroup Text Commands Syntax
- */
-
-#ifdef USE_TEXTCOMMAND
-
 #include "CurrentMonitor.h"
 #include "PacketRegister.h"
 
@@ -34,5 +29,4 @@ struct TextCommand
   static void process();
 }; // TextCommand
 
-#endif
 #endif
