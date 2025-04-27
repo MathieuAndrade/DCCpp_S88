@@ -157,7 +157,7 @@ void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
     bitSet(TCCR1B, WGM12);
     bitSet(TCCR1B, WGM13);
 
-    bitSet(TCCR1A, COM1B1); // set Timer 1, OC1B (pin 10/UNO, pin 12/MEGA) to inverting toggle (actual direction is arbitrary)
+    bitSet(TCCR1A, COM1B1); // set Timer 1, OC1B (pin 12/MEGA) to inverting toggle (actual direction is arbitrary)
     bitSet(TCCR1A, COM1B0);
 
     bitClear(TCCR1B, CS12); // set Timer 1 prescale=1
@@ -189,52 +189,7 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
     progMonitor.begin(DCCppConfig::CurrentMonitorProg, (char *)"<p4>");
 
-    // CONFIGURE EITHER TIMER_0 (UNO) OR TIMER_3 (MEGA) TO OUTPUT 50% DUTY CYCLE DCC SIGNALS ON OC0B (UNO) OR OC3B (MEGA) INTERRUPT PINS
-
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) // Configuration for UNO
-
-    // Direction Pin for Motor Shield Channel B - PROGRAMMING TRACK
-    // Controlled by Arduino 8-bit TIMER 0 / OC0B Interrupt Pin
-    // Values for 8-bit OCR0A and OCR0B registers calibrated for 1:64 prescale at 16 MHz clock frequency
-    // Resulting waveforms are 200 microseconds for a ZERO bit and 116 microseconds for a ONE bit with as-close-as-possible to 50% duty cycle
-
-#define DCC_ZERO_BIT_TOTAL_DURATION_TIMER0 49
-#define DCC_ZERO_BIT_PULSE_DURATION_TIMER0 24
-
-#define DCC_ONE_BIT_TOTAL_DURATION_TIMER0 28
-#define DCC_ONE_BIT_PULSE_DURATION_TIMER0 14
-
-    if (DCCppConfig::DirectionMotorB != UNDEFINED_PIN)
-    {
-        pinMode(DCCppConfig::DirectionMotorB, INPUT); // ensure this pin is not active! Direction will be controlled by DCC SIGNAL instead (below)
-        digitalWrite(DCCppConfig::DirectionMotorB, LOW);
-    }
-
-    if (inSignalPin != UNDEFINED_PIN)
-        pinMode(inSignalPin, OUTPUT); // THIS ARDUINO OUTPUT PIN MUST BE PHYSICALY CONNECTED TO THE PIN FOR DIRECTION-B OF MOTOR CHANNEL-B
-
-    bitSet(TCCR0A, WGM00); // set Timer 0 to FAST PWM, with TOP=OCR0A
-    bitSet(TCCR0A, WGM01);
-    bitSet(TCCR0B, WGM02);
-
-    bitSet(TCCR0A, COM0B1); // set Timer 0, OC0B (pin 5) to inverting toggle (actual direction is arbitrary)
-    bitSet(TCCR0A, COM0B0);
-
-    bitClear(TCCR0B, CS02); // set Timer 0 prescale=64
-    bitSet(TCCR0B, CS01);
-    bitSet(TCCR0B, CS00);
-
-    OCR0A = DCC_ONE_BIT_TOTAL_DURATION_TIMER0;
-    OCR0B = DCC_ONE_BIT_PULSE_DURATION_TIMER0;
-
-    pinMode(DCCppConfig::SignalEnablePinProg, OUTPUT); // master enable for motor channel B
-
-    progRegs.loadPacket(1, RegisterList::idlePacket, 2, 0); // load idle packet into register 1
-
-    bitSet(TIMSK0, OCIE0B); // enable interrupt vector for Timer 0 Output Compare B Match (OCR0B)
-
-#else // Configuration for MEGA
-
+    // Configuration for MEGA
     // Direction Pin for Motor Shield Channel B - PROGRAMMING TRACK
     // Controlled by Arduino 16-bit TIMER 3 / OC3B Interrupt Pin
     // Values for 16-bit OCR3A and OCR3B registers calibrated for 1:1 prescale at 16 MHz clock frequency
@@ -275,7 +230,6 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
     bitSet(TIMSK3, OCIE3B); // enable interrupt vector for Timer 3 Output Compare B Match (OCR3B)
 
-#endif
     digitalWrite(DCCppConfig::SignalEnablePinProg, LOW);
 }
 
@@ -373,19 +327,11 @@ void DCCpp::begin()
 ISR(TIMER1_COMPB_vect){// set interrupt service for OCR1B of TIMER-1 which flips direction bit of Motor Shield Channel A controlling Main Track
                        DCC_SIGNAL(DCCpp::mainRegs, 1)}
 
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) // Configuration for UNO
-
-ISR(TIMER0_COMPB_vect){// set interrupt service for OCR1B of TIMER-0 which flips direction bit of Motor Shield Channel B controlling Programming Track
-                       DCC_SIGNAL(DCCpp::progRegs, 0)}
-
-#else // Configuration for MEGA
-
+// Configuration for MEGA
 ISR(TIMER3_COMPB_vect)
 { // set interrupt service for OCR3B of TIMER-3 which flips direction bit of Motor Shield Channel B controlling Programming Track
     DCC_SIGNAL(DCCpp::progRegs, 3)
 }
-
-#endif
 
 void DCCpp::panicStop(bool inStop)
 {

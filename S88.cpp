@@ -49,7 +49,6 @@
 
 #ifdef USE_S88
 #include "S88.h"
-#include "DCCpp_Uno.h"
 
 #ifdef USE_TEXTCOMMAND
 #include "TextCommand.h"

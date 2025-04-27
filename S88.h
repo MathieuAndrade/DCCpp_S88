@@ -19,12 +19,8 @@ COPYRIGHT (c) 2013-2020 Xavier Bouillard & Philippe Chavatte
 
 #define S88_SAMPLE_TIME 4 // ms, to be adjusted for S88 clock
 
-// pins number can be different if you wish
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) // Configuration for UNO/NANO
-#define S88_Clock_PIN 2                                   // output, Clock
-#else                                                     // Configuration for MEGA
-#define S88_Clock_PIN 5                                   // output, Clock
-#endif
+// Configuration for MEGA
+#define S88_Clock_PIN 5 // output, Clock
 
 #define S88_LOAD_PS_PIN 6 // output, Load request for slave devices
 #define S88_Reset_PIN 7   // output, Reset request for slave devices

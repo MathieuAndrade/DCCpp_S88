@@ -168,7 +168,7 @@ void setup()
 #ifndef USE_CDMRAIL
   delay(1000);
   Serial.println(F("Initialisation de la liaison serie USB2COM 115200 baud"));
-  Serial.println(F("Programme de conduite DCCpp_S88 pour Arduino UNO/MEGA2560 avec booster L298N et MAX471"));
+  Serial.println(F("Programme de conduite DCCpp_S88 pour Arduino MEGA2560 avec booster L298N et MAX471"));
   Serial.println(F("Adaptation par Philippe Chavatte - 31 juillet 2018 - lormedy.free.fr"));
   Serial.println(F("Option S88 par Philippe Chavatte - 25 mai 2019 - lormedy@free.fr"));
   delay(500);
@@ -222,9 +222,7 @@ void setup()
   // Configuration for Arduino Mega2560 + 2 L298 + 2 MAX471. See the page 'Configuration lines' in the documentation in DCCpp.h for other samples.
 
   DCCpp::beginMain(UNDEFINED_PIN, DCC_SIGNAL_PIN_MAIN, 14, A0); // defined in config.h : DCC_SIGNAL_PIN_MAIN 12  // Arduino Mega - uses OC1B
-  //                                                                                                              10 for Arduino UNO  - uses OC1B
   DCCpp::beginProg(UNDEFINED_PIN, DCC_SIGNAL_PIN_PROG, 11, A1); // defined in config.h : DCC_SIGNAL_PIN_PROG  2  // Arduino Mega - uses OC3B
-  //                                                                                                               5 for Arduino UNO  - uses OC0B
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

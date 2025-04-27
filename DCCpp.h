@@ -13,7 +13,6 @@
 
 /////////////////////////////////////
 
-#include "DCCpp_Uno.h"
 #include "PacketRegister.h"
 #include "CurrentMonitor.h"
 #include "Config.h"

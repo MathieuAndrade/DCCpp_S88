@@ -11,26 +11,21 @@ Part of DCC++ BASE STATION for the Arduino
 #define CurrentMonitor_h
 
 /** Factor to smooth the result...*/
-#define  CURRENT_SAMPLE_SMOOTHING   0.01
+#define CURRENT_SAMPLE_SMOOTHING 0.01
 
-/** Time between two measurements.
-@remark Millis() uses TIMER-0.  For UNO, we change the scale on Timer-0.  For MEGA we do not.  This means CURRENT_SAMPLE_TIME is different for UNO then MEGA.
-*/
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO)  // Configuration for UNO
-    #define  CURRENT_SAMPLE_TIME        10
-#else                                                      // Configuration for MEGA
-    #define  CURRENT_SAMPLE_TIME        1
-#endif
+/** Time between two measurements */
+#define CURRENT_SAMPLE_TIME 1
 
 /** This structure/class describes a current monitor.*/
 
-struct CurrentMonitor{
+struct CurrentMonitor
+{
   static long int sampleTime; /**< time elapsed since last measurement. This delay is common to all monitors. */
-  int pin;  /**< Attached pin.*/
-  int signalPin;  /**< signal pin.*/
-  float currentSampleMax;   /**< Value of the maximum current accepted without problem.*/
-  float current; /**< Value of the last measured current.*/
-  const char *msg;  /**< Message to send when excessive current is measured.*/
+  int pin;                    /**< Attached pin.*/
+  int signalPin;              /**< signal pin.*/
+  float currentSampleMax;     /**< Value of the maximum current accepted without problem.*/
+  float current;              /**< Value of the last measured current.*/
+  const char *msg;            /**< Message to send when excessive current is measured.*/
   /** begin function.
   @param pin    Attached pin. UNDEFINED_PIN to inactivate this monitor.
   @param msg    Message to send to console when a smoothed current value greater than maximum is detected.
@@ -38,16 +33,16 @@ struct CurrentMonitor{
   */
   void begin(int pin, const char *msg, float inSampleMax = 300);
   /** Checks if sufficient time has elapsed since last update. Common to all monitors.
-  */
+   */
   static boolean checkTime();
   /** Checks the current on this monitor.
-  */
+   */
   void check();
 };
 
 #define EmergencyStop A5
 
 #define E_BOOSTER_ENABLE true // uncomment these 2 lines to use with a CDE booster
-#define E_BoosterIn      A7
+#define E_BoosterIn A7
 
 #endif

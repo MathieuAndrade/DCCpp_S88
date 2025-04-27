@@ -24,6 +24,9 @@ Part of DCC++ BASE STATION for the Arduino
 /** Number of track registers for the programming line. 0 for transient orders, the two others for continual orders for the only loco on this track. */
 #define MAX_PROG_REGISTERS 3
 
+#define DCCPP_INTERFACE Serial
+#define VERSION "2.0.0"
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 // DEFINE PINS ACCORDING TO MOTOR SHIELD MODEL
@@ -34,19 +37,8 @@ Part of DCC++ BASE STATION for the Arduino
 #define MAX_MAIN_REGISTERS 100
 #endif
 
-#if (defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO)) // Configuration for UNO or NANO
-
-/** Interruption pin for main track.*/
-#define DCC_SIGNAL_PIN_MAIN 10 // Arduino Uno  - uses OC1B
-/** Interruption pin for programming track.*/
-#define DCC_SIGNAL_PIN_PROG 5 // Arduino Uno  - uses OC0B
-
-#elif defined(ARDUINO_AVR_MEGA2560)
-
 #define DCC_SIGNAL_PIN_MAIN 12 // Arduino Mega - uses OC1B
 #define DCC_SIGNAL_PIN_PROG 2  // Arduino Mega - uses OC3B
-
-#endif
 
 struct DCCppConfig
 {
