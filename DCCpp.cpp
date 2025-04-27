@@ -99,22 +99,6 @@ void DCCpp::loop()
         S88::check();
     }
 #endif
-
-#ifdef PING_MASTER
-    if (powerOn)
-    {
-        if (DCCpp::pingSend == true && millis() - DCCpp::pingTime > DCCpp::pingTimeout && DCCpp::panicStopped == false)
-        {
-            DCCpp::panicStop(true);
-        }
-        else if (DCCpp::pingSend == false && millis() - DCCpp::pingTime > DCCpp::pingTimeout && DCCpp::panicStopped == false)
-        {
-            DCCPP_INTERFACE.println("<g1>");
-            DCCpp::pingTime = millis();
-            DCCpp::pingSend = true;
-        }
-    }
-#endif
 }
 
 void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)

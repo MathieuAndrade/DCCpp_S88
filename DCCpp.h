@@ -7,7 +7,6 @@
 //  Inclusion area
 #define USE_S88
 #define USE_TEXTCOMMAND
-// #define PING_MASTER
 
 #endif
 
