@@ -224,16 +224,14 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCpp::mainRegs.setExtendedAccessory(com + 1);
     break;
 
-#ifdef USE_TURNOUT
   case 'T':
     /*
      * *** SEE TURNOUT.CPP FOR COMPLETE INFO ON THE DIFFERENT VARIATIONS OF THE "T" COMMAND
      * USED TO CREATE/EDIT/REMOVE/SHOW TURNOUT DEFINITIONS
      */
 
-    Turnout::parse(com + 1);
+    DCCpp::setTurnout(com + 1);
     break;
-#endif
 
   case 'w':
 

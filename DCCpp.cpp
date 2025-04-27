@@ -592,3 +592,22 @@ void DCCpp::setAccessory(int inAddress, byte inSubAddress, byte inActivate)
 {
     mainRegs.setAccessory(inAddress, inSubAddress, inActivate);
 }
+
+void DCCpp::setTurnout(char *c)
+{
+    // <T address state> : set turnout address to state (0 or 1)
+
+    // parse the command string
+    int n, s, m;
+    n = strtol(c, &c, 10); // get the turnout number
+    if (*c == ' ')
+    {
+        c++;
+    }
+    s = strtol(c, &c, 10); // get the state (0 or 1)
+
+    m = n + 3; // simplification de la commande sans EEPROM (Lormedy)
+
+    DCCpp::mainRegs.setAccessory((m >> 2), (m & 3), (s > 0));
+    DCCPP_INTERFACE.println("<H " + String(n) + ((s == 0) ? " 0>" : " 1>"));
+}

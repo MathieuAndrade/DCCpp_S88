@@ -5,7 +5,6 @@
 #define LIBRARY_VERSION "VERSION DCCpp library: 1.3.2"
 
 //  Inclusion area
-#define USE_TURNOUT
 #define USE_S88
 #define USE_TEXTCOMMAND
 // #define PING_MASTER
@@ -19,9 +18,6 @@
 #include "CurrentMonitor.h"
 #include "Config.h"
 
-#ifdef USE_TURNOUT
-#include "Turnout.h"
-#endif
 #ifdef USE_S88
 #include "S88.h"
 #endif

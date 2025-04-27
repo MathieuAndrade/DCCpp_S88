@@ -235,6 +235,8 @@ public:
 	@param inActivate	True to activate the accessory, false to deactivate.
 	*/
 	static void setAccessory(int inAddress, byte inSubAddress, byte inActivate);
+
+	static void setTurnout(char *c);
 };
 
 //-------------------------------------------------------------------
