@@ -148,9 +148,9 @@ void S88::check()
 #endif
             }
             if (tmpint < 10)
-              S88Status += tmpint; // DCCPP_INTERFACE.print(tmpint);
+              S88Status += tmpint; // DCCPP_INTERFACE.println(tmpint);
             else
-              S88Status += (char)(tmpint - 10 + 'A'); // DCCPP_INTERFACE.print((char)(tmpint+55));
+              S88Status += (char)(tmpint - 10 + 'A'); // DCCPP_INTERFACE.println((char)(tmpint+55));
           }
         }
         else if (DataFormat == 3)
@@ -163,7 +163,7 @@ void S88::check()
             {
               DCCPP_INTERFACE.print(tmp[0] == '0' ? "<q " : "<Q ");
               DCCPP_INTERFACE.print(s88index + 1); // s88index range 0..511
-              DCCPP_INTERFACE.print(">");
+              DCCPP_INTERFACE.println(">");
             }
           }
         }
@@ -171,7 +171,7 @@ void S88::check()
         if (DataFormat < 3)
         {
           S88Status += ">";                 // end of feedback (CDT3x or CDM-Rail)
-          DCCPP_INTERFACE.print(S88Status); // send automaticly data at each sensors state change
+          DCCPP_INTERFACE.println(S88Status); // send automaticly data at each sensors state change
         }
 
         Old_Occ = OccL; // save data
@@ -214,13 +214,13 @@ void S88::parse(char *c)
   case 1: // argument is string with Nb_S88_Modules (default DataFormat is Binary)
     if (n < 0 || n > 64 || (n & 1 == 1))
     {
-      DCCPP_INTERFACE.print(F("<X Bad Argument value>")); // Bad Argument Value
+      DCCPP_INTERFACE.println(F("<X Bad Argument value>")); // Bad Argument Value
     }
     else
     {
       DataFormat = (n > 0) ? 0 : 9;                                                // Output DataFormat 0=binAscii 9=stop
       N = n;                                                                       // S88 byte length
-      DCCPP_INTERFACE.print("<o " + String(N) + "*8 " + String(DataFormat) + ">"); // confirm command was receceived
+      DCCPP_INTERFACE.println("<o " + String(N) + "*8 " + String(DataFormat) + ">"); // confirm command was receceived
 
       Old_Occ = "";
       S88_Cpt = 0; // reset to case 1 if n > 0, if 0 stop
@@ -230,7 +230,7 @@ void S88::parse(char *c)
   case 2: // argument is string with Nb_S88_Modules and DataFormat
     if ((n < 0 || n > 64) || (n & 1 == 1) || f < 0 || f > 3)
     {
-      DCCPP_INTERFACE.print(F("<X Bad Argument value>")); // Bad Argument Value
+      DCCPP_INTERFACE.println(F("<X Bad Argument value>")); // Bad Argument Value
     }
     else
     {
@@ -240,7 +240,7 @@ void S88::parse(char *c)
       //        DataFormat = 3;        // JMRI, Rocrail or SENSOR style
       if (f != 3)
       {
-        DCCPP_INTERFACE.print("<o " + String(N) + "*8 " + String(DataFormat) + ">"); // confirm command was receceived
+        DCCPP_INTERFACE.println("<o " + String(N) + "*8 " + String(DataFormat) + ">"); // confirm command was receceived
       }
 
       Old_Occ = "";
@@ -249,7 +249,7 @@ void S88::parse(char *c)
     break;
 
   default:                                              // argument count incorrect (0, 1, 2 or 3 are valid)
-    DCCPP_INTERFACE.print(F("<x Bad Argument count>")); // Bad Argument count
+    DCCPP_INTERFACE.println(F("<x Bad Argument count>")); // Bad Argument count
     break;
   } // end of switch
 

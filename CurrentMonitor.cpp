@@ -75,13 +75,13 @@ void CurrentMonitor::check()
     if (eStop && powerState && eStop_mem)
     {
         DCCpp::panicStop(eStop);
-        DCCPP_INTERFACE.print(F("E_Booster OFF"));
+        DCCPP_INTERFACE.println(F("E_Booster OFF"));
     }
 
     if (!eStop && !powerState && eStop_mem)
     {
         DCCpp::panicStop(eStop);
-        DCCPP_INTERFACE.print(F("E_Booster ON"));
+        DCCPP_INTERFACE.println(F("E_Booster ON"));
     }
 
     eStop_mem = eStop;

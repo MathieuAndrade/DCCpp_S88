@@ -304,7 +304,7 @@ void DCCpp::powerOn()
         digitalWrite(DCCppConfig::SignalEnablePinMain, HIGH);
     }
 
-    DCCPP_INTERFACE.print("<p1>");
+    DCCPP_INTERFACE.println("<p1>");
 
     DCCpp::pingSend = false;
     DCCpp::pingTime = millis();
@@ -317,7 +317,7 @@ void DCCpp::powerOff()
         digitalWrite(DCCppConfig::SignalEnablePinProg, LOW);
     if (DCCppConfig::SignalEnablePinMain != UNDEFINED_PIN)
         digitalWrite(DCCppConfig::SignalEnablePinMain, LOW);
-    DCCPP_INTERFACE.print("<p0>");
+    DCCPP_INTERFACE.println("<p0>");
 
     stopAllThrottles();
 }

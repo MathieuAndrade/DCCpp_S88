@@ -388,7 +388,7 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
 
     DCCPP_INTERFACE.print("<a");
     DCCPP_INTERFACE.print(int(DCCpp::getCurrentMain()));
-    DCCPP_INTERFACE.print(">");
+    DCCPP_INTERFACE.println(">");
     break;
 
   case 's':
@@ -409,9 +409,9 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     */
 
     if (digitalRead(DCCppConfig::SignalEnablePinProg) == LOW) // could check either PROG or MAIN
-      DCCPP_INTERFACE.print("<p0>");
+      DCCPP_INTERFACE.println("<p0>");
     else
-      DCCPP_INTERFACE.print("<p1>");
+      DCCPP_INTERFACE.println("<p1>");
 
     for (int i = 1; i <= MAX_MAIN_REGISTERS; i++)
     {
@@ -423,12 +423,12 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
       if (DCCpp::mainRegs.speedTable[i] > 0)
       {
         DCCPP_INTERFACE.print(DCCpp::mainRegs.speedTable[i]);
-        DCCPP_INTERFACE.print(" 1>");
+        DCCPP_INTERFACE.println(" 1>");
       }
       else
       {
         DCCPP_INTERFACE.print(-DCCpp::mainRegs.speedTable[i]);
-        DCCPP_INTERFACE.print(" 0>");
+        DCCPP_INTERFACE.println(" 0>");
       }
     }
     DCCPP_INTERFACE.print("<iDCCpp LIBRARY BASE STATION FOR ARDUINO ");
@@ -441,7 +441,7 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
     DCCPP_INTERFACE.print(__DATE__);
     DCCPP_INTERFACE.print(" ");
     DCCPP_INTERFACE.print(__TIME__);
-    DCCPP_INTERFACE.print(">");
+    DCCPP_INTERFACE.println(">");
 
     DCCPP_INTERFACE.print("<N ");
     DCCPP_INTERFACE.println("SERIAL>");

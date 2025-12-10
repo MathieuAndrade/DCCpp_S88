@@ -152,7 +152,7 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
   loadPacket(nReg, b, nB, 0, 1);
 
   answerString = String("<T") + String(nReg) + String(" ") + String(cab) + String(" ") + String(tSpeed) + String(" ") + String(tDirection) + String(">");
-  DCCPP_INTERFACE.print((const String &)answerString);
+  DCCPP_INTERFACE.println((const String &)answerString);
 
 } // RegisterList::setThrottle(ints)
 
@@ -194,7 +194,7 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
   }
 
   answerString = String("<F") + String(nReg) + String(" ") + String(cab) + String(" ") + String(fByte) + String(" ") + String(eByte) + String(">");
-  DCCPP_INTERFACE.print((const String &)answerString);
+  DCCPP_INTERFACE.println((const String &)answerString);
   /* NMRA DCC norm ask for two DCC packets instead of only one:
   "Command Stations that generate these packets, and which are not periodically refreshing these functions,
   must send at least two repetitions of these commands when any function state is changed."
@@ -291,7 +291,7 @@ void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile
 
   if (nBytes < 2 || nBytes > 5)
   { // invalid valid packet
-    DCCPP_INTERFACE.print("<mInvalid Packet>");
+    DCCPP_INTERFACE.println("<mInvalid Packet>");
     return;
   }
 
@@ -390,7 +390,7 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile
     bValue = -1;
 
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
-  DCCPP_INTERFACE.print((const String &)answerString);
+  DCCPP_INTERFACE.println((const String &)answerString);
 
   return bValue;
 }
@@ -477,7 +477,7 @@ void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub
   }
 
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
-  DCCPP_INTERFACE.print((const String &)answerString);
+  DCCPP_INTERFACE.println((const String &)answerString);
 } // RegisterList::writeCVByte(ints)
 
 void RegisterList::writeCVByte(char *s) volatile
@@ -541,7 +541,7 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
   }
 
   answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bNum) + String(" ") + String(bValue) + String(">");
-  DCCPP_INTERFACE.print((const String &)answerString);
+  DCCPP_INTERFACE.println((const String &)answerString);
 } // RegisterList::writeCVBit(ints)
 
 void RegisterList::writeCVBit(char *s) volatile
