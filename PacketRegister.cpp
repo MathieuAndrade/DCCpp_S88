@@ -51,7 +51,9 @@ RegisterList::RegisterList(int maxNumRegs)
 // CONVERTS 2, 3, 4, OR 5 BYTES INTO A DCC BIT STREAM WITH PREAMBLE, CHECKSUM, AND PROPER BYTE SEPARATORS
 // BITSTREAM IS STORED IN UP TO A 10-BYTE ARRAY (USING AT MOST 76 OF 80 BITS)
 
-void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int printFlag) volatile
+// printFlag is unused since printPacket() went away with the debug mode, but it
+// is still part of the signature and passed by most call sites.
+void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int) volatile
 {
   nReg = nReg % ((maxNumRegs + 1)); // force nReg to be between 0 and maxNumRegs, inclusive
 

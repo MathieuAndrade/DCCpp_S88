@@ -2,8 +2,6 @@
 #ifndef __DCCpp_H__
 #define __DCCpp_H__
 
-#define LIBRARY_VERSION "VERSION DCCpp library: 1.3.2"
-
 /////////////////////////////////////
 
 #include "PacketRegister.h"
@@ -70,7 +68,6 @@ There is no needs to instantiate this class.
 class DCCpp
 {
 private:
-    static bool programMode;
     static bool panicStopped;
 
     static bool setThrottle(volatile RegisterList *inReg, int nReg, int inLocoId, int inStepsNumber, int inNewSpeed, bool inForward);
@@ -84,9 +81,6 @@ public:
     static volatile RegisterList mainRegs, progRegs;
     static CurrentMonitor mainMonitor;
     static CurrentMonitor progMonitor;
-    static bool pingSend;
-    static long pingTime;
-    static long pingTimeout;
 
 public:
     // begins
@@ -94,19 +88,17 @@ public:
      */
     static void begin();
     /** Initializes the main track.
-    @param inOptionalDirectionMotor	Pin for the rerouting of shields direction pin, set it to UNDEFINED_PIN if not used.
     @param inSignalPin	Pin for the signal pin, the one driven by an interruption, set it to UNDEFINED_PIN if not used (but the line will be always down...).
     @param inSignalEnablePin	Pin for the enable/PWM pin, set it to UNDEFINED_PIN if not used.
     @param inCurrentMonitor	Pin for the current monitor analog pin, set it to UNDEFINED_PIN if not used.
     */
-    static void beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnablePin, uint8_t inCurrentMonitor);
+    static void beginMain(uint8_t inSignalPin, uint8_t inSignalEnablePin, uint8_t inCurrentMonitor);
     /** Initializes the programming track.
-    @param inOptionalDirectionMotor	Pin for the rerouting of shields direction pin, set it to UNDEFINED_PIN if not used.
     @param inSignalPin	Pin for the signal pin, the one driven by an interruption, set it to UNDEFINED_PIN if not used (but the line will be always down...).
     @param inSignalEnablePin	Pin for the enable/PWM pin, set it to UNDEFINED_PIN if not used.
     @param inCurrentMonitor	Pin for the current monitor analog pin, set it to UNDEFINED_PIN if not used.
     */
-    static void beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnablePin, uint8_t inCurrentMonitor);
+    static void beginProg(uint8_t inSignalPin, uint8_t inSignalEnablePin, uint8_t inCurrentMonitor);
 
     // DCCpp global functions
 
@@ -125,11 +117,11 @@ public:
     */
     static void panicStop(bool inStop);
 
-    /** Stop the power on all the tracks.
+    /** Restore the power on all the tracks.
      */
     static void powerOn();
 
-    /** Restore the power on all the tracks.
+    /** Stop the power on all the tracks.
      */
     static void powerOff();
 

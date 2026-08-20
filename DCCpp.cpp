@@ -7,7 +7,6 @@ volatile RegisterList DCCpp::progRegs(3);
 CurrentMonitor DCCpp::mainMonitor;
 CurrentMonitor DCCpp::progMonitor;
 
-bool DCCpp::programMode;
 bool DCCpp::panicStopped;
 
 // *********************************************************** FunctionsState
@@ -56,19 +55,9 @@ void FunctionsState::statesSent()
 
 // *********************************************************** DCCpp class
 
-static bool first = true;
-bool DCCpp::pingSend = false;
-long DCCpp::pingTime = 0;
-long DCCpp::pingTimeout = 4000;
-
 void DCCpp::loop()
 {
     TextCommand::process(); // check for, and process, and new serial commands
-
-    if (first)
-    {
-        first = false;
-    }
 
     if (CurrentMonitor::checkTime())
     {
@@ -83,7 +72,7 @@ void DCCpp::loop()
     }
 }
 
-void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
+void DCCpp::beginMain(uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
 {
     DCCppConfig::SignalEnablePinMain = inSignalEnable; // PWM
     DCCppConfig::CurrentMonitorMain = inCurrentMonitor;
@@ -135,7 +124,7 @@ void DCCpp::beginMain(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
     digitalWrite(DCCppConfig::SignalEnablePinMain, LOW);
 }
 
-void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
+void DCCpp::beginProg(uint8_t inSignalPin, uint8_t inSignalEnable, uint8_t inCurrentMonitor)
 {
     DCCppConfig::SignalEnablePinProg = inSignalEnable;
     DCCppConfig::CurrentMonitorProg = inCurrentMonitor;
@@ -160,7 +149,8 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 #define DCC_ONE_BIT_TOTAL_DURATION_TIMER3 1855
 #define DCC_ONE_BIT_PULSE_DURATION_TIMER3 927
 
-    pinMode(DCC_SIGNAL_PIN_PROG, OUTPUT); // THIS ARDUINO OUTPUT PIN MUST BE PHYSICALLY CONNECTED TO THE PIN FOR DIRECTION-B OF MOTOR CHANNEL-B
+    if (inSignalPin != UNDEFINED_PIN)
+        pinMode(inSignalPin, OUTPUT); // THIS ARDUINO OUTPUT PIN MUST BE PHYSICALLY CONNECTED TO THE PIN FOR DIRECTION-B OF MOTOR CHANNEL-B
 
     bitSet(TCCR3A, WGM30); // set Timer 3 to FAST PWM, with TOP=OCR3A
     bitSet(TCCR3A, WGM31);
@@ -188,7 +178,6 @@ void DCCpp::beginProg(uint8_t inOptionalDirectionMotor, uint8_t inSignalPin, uin
 
 void DCCpp::begin()
 {
-    programMode = false;
     panicStopped = false;
 
     DCCppConfig::SignalEnablePinMain = UNDEFINED_PIN;
@@ -307,8 +296,6 @@ void DCCpp::powerOn()
 
     DCCPP_INTERFACE.println("<p1>");
 
-    DCCpp::pingSend = false;
-    DCCpp::pingTime = millis();
     DCCpp::panicStopped = false;
 }
 

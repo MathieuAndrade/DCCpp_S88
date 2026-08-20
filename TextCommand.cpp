@@ -1,8 +1,5 @@
 #include "TextCommand.h"
 
-extern unsigned int __heap_start;
-extern void *__brkval;
-
 char TextCommand::commandString[MAX_COMMAND_LENGTH + 1];
 
 void TextCommand::process()
@@ -49,6 +46,7 @@ void TextCommand::parse(char *com)
     com[4] = ' ';
     com[5] = '3';
     com[6] = '\0';
+    // fall through - <Q> is handled as <Y 64 3>
   case 'Y': // <Y Nb_S88_Modules DataFormat> for initialisation or <Y> for occupation feedback
             /*
              *   <Y Nb_S88_Bytes DataFormat>:            sets Nb_S88_Modules read with output DataFormat
@@ -583,11 +581,6 @@ returns: <b>\<T REGISTE%R SPEED DIRECTION\></b>
       DCCPP_INTERFACE.println("");
     }
     DCCPP_INTERFACE.println("");
-    break;
-
-  case 'g':
-    DCCpp::pingSend = false;
-    DCCpp::pingTime = millis();
     break;
 
   } // switch

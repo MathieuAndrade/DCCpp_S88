@@ -27,8 +27,8 @@ void setup()
 
   DCCpp::begin();
 
-  DCCpp::beginMain(UNDEFINED_PIN, DCC_SIGNAL_PIN_MAIN, 14, A0);
-  DCCpp::beginProg(UNDEFINED_PIN, DCC_SIGNAL_PIN_PROG, 11, A1);
+  DCCpp::beginMain(DCC_SIGNAL_PIN_MAIN, 14, A0);
+  DCCpp::beginProg(DCC_SIGNAL_PIN_PROG, 11, A1);
 
   Serial.println(F("<DCCpp station ready>"));
 }
