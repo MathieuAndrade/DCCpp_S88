@@ -290,7 +290,8 @@ void RegisterList::setExtendedAccessory(int aAdd, int val) volatile
 void RegisterList::setExtendedAccessory(char *s) volatile
 {
   int aAdd; // the accessory address (1-2044 = 11 bits)
-  byte val; // the accessory value for that address (0-31) following NMRA recommended convention, but byte holds 0..255
+  int val;  // the accessory value for that address (0-31) following NMRA recommended convention, truncated to a byte in the packet
+            // NOTE: must be an int, sscanf("%d") writes sizeof(int) bytes
 
   if (sscanf(s, "%d %d", &aAdd, &val) != 2)
   {
