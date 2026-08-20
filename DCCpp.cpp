@@ -490,19 +490,35 @@ void DCCpp::setAccessory(int inAddress, byte inSubAddress, byte inActivate)
 
 void DCCpp::setTurnout(char *c)
 {
-    // <T address state> : set turnout address to state (0 or 1)
+    // <T ADDRESS STATE> : throw the turnout at the given linear address.
+    //
+    // ADDRESS is a linear turnout number (1..2044), mapped onto the NMRA
+    // accessory address / sub-address pair the same way JMRI and DCC++ EX do
+    // it. This station does not store turnout definitions, so the three
+    // argument form <T ID ADDRESS SUBADDRESS> that some software sends to
+    // declare a turnout has no meaning here and is rejected rather than
+    // silently throwing a turnout: with the previous parser it was read as
+    // <T ID STATE> with STATE = ADDRESS, which fired the turnout.
+    int address, state, extra;
 
-    // parse the command string
-    int n, s, m;
-    n = strtol(c, &c, 10); // get the turnout number
-    if (*c == ' ')
+    // Exactly two arguments are expected. Reading a third one lets us tell a
+    // definition apart from a throw order, and strtol() could not: it returns
+    // 0 for an empty string just as it does for "0", so a bare <T> used to
+    // emit a real accessory packet on address 0.
+    if (sscanf(c, "%d %d %d", &address, &state, &extra) != 2)
     {
-        c++;
+        DCCPP_INTERFACE.println("<X>");
+        return;
     }
-    s = strtol(c, &c, 10); // get the state (0 or 1)
 
-    m = n + 3;
+    if (address < 1 || address > 2044)
+    {
+        DCCPP_INTERFACE.println("<X>");
+        return;
+    }
 
-    DCCpp::mainRegs.setAccessory((m >> 2), (m & 3), (s > 0));
-    DCCPP_INTERFACE.println("<H " + String(n) + ((s == 0) ? " 0>" : " 1>"));
+    int linear = address + 3;
+
+    DCCpp::mainRegs.setAccessory((linear >> 2), (linear & 3), (state > 0));
+    DCCPP_INTERFACE.println("<H " + String(address) + ((state > 0) ? " 1>" : " 0>"));
 }
