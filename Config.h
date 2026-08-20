@@ -46,8 +46,6 @@ the input then floats and triggers random power cuts. */
 #define EN_Garage 15 // enable "Garage" power district
 #define EN_Depot 16  // enable "Depot" power district
 
-#define USE_CDMRAIL // to be defined if needed
-
 #define S88_VERSION "VERSION S88 library:   1.3.0"
 
 #define S88_SAMPLE_TIME 4 // ms, to be adjusted for S88 clock

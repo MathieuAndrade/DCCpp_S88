@@ -11,14 +11,8 @@ COPYRIGHT (c) 2013-2020 Xavier Bouillard & Philippe Chavatte
 #include "DCCpp.h"
 #include "Arduino.h"
 
-struct S88Data
-{
-  int Nn;
-};
-
 struct S88
 {
-  struct S88Data data;
   static long int S88sampleTime;
   static byte S88_Cpt;
 
