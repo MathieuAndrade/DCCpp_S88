@@ -33,7 +33,6 @@ struct RegisterList
   Register *maxLoadedReg;
   Register *nextReg;
   Packet *tempPacket;
-  String answerString;
   byte currentBit;
   byte nRepeat;
   int *speedTable;

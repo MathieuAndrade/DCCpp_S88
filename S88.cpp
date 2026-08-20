@@ -237,11 +237,14 @@ void S88::check()
 
 void S88::parse(char *c)
 {
-  int n, f, m;
+  int args[3] = {0, 0, 0};
+  int count = TextCommand::parseNumbers(c, args, 3);
+  int n = args[0];
+  int f = args[1];
 
-  switch (sscanf(c, "%d %d %d", &n, &f, &m))
+  switch (count)
   {
-  case -1: // no arguments: ask for a full refresh
+  case 0: // no arguments: ask for a full refresh
     oldValid = false;
     S88_Cpt = 0; // reset to case 1
     break;
@@ -255,7 +258,11 @@ void S88::parse(char *c)
     {
       DataFormat = (n > 0) ? 0 : 9; // Output DataFormat 0=binAscii 9=stop
       N = (uint8_t)n;               // S88 byte length
-      DCCPP_INTERFACE.println("<o " + String(N) + "*8 " + String(DataFormat) + ">");
+      DCCPP_INTERFACE.print("<o ");
+      DCCPP_INTERFACE.print(N);
+      DCCPP_INTERFACE.print("*8 ");
+      DCCPP_INTERFACE.print(DataFormat);
+      DCCPP_INTERFACE.println(">");
 
       oldValid = false;
       S88_Cpt = 0; // reset to case 1 if n > 0, if 0 stop
@@ -274,7 +281,11 @@ void S88::parse(char *c)
 
       if (f != 3)
       {
-        DCCPP_INTERFACE.println("<o " + String(N) + "*8 " + String(DataFormat) + ">");
+        DCCPP_INTERFACE.print("<o ");
+        DCCPP_INTERFACE.print(N);
+        DCCPP_INTERFACE.print("*8 ");
+        DCCPP_INTERFACE.print(DataFormat);
+        DCCPP_INTERFACE.println(">");
       }
 
       oldValid = false;
@@ -282,7 +293,7 @@ void S88::parse(char *c)
     }
     break;
 
-  default:                                                // argument count incorrect (0, 1 or 2 are valid)
+  default: // too many arguments (0, 1 or 2 are valid)
     DCCPP_INTERFACE.println(F("<x Bad Argument count>")); // Bad Argument count
     break;
   } // end of switch

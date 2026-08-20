@@ -2,6 +2,67 @@
 
 char TextCommand::commandString[MAX_COMMAND_LENGTH + 1];
 
+static int digitValue(char c, int base)
+{
+  int v;
+
+  if (c >= 48 && c <= 57)      // 0 to 9
+    v = c - 48;
+  else if (c >= 97 && c <= 102) // a to f
+    v = c - 97 + 10;
+  else if (c >= 65 && c <= 70)  // A to F
+    v = c - 65 + 10;
+  else
+    return -1;
+
+  return (v < base) ? v : -1;
+}
+
+bool TextCommand::parseNumber(const char **ioText, int inBase, int *outValue)
+{
+  const char *p = *ioText;
+  bool negative = false;
+  long value = 0;
+  int digits = 0;
+
+  while (*p == 32 || *p == 9 || *p == 13 || *p == 10) // blanks, tabs, line ends
+    p++;
+
+  if (*p == 45) // minus sign
+  {
+    negative = true;
+    p++;
+  }
+  else if (*p == 43) // plus sign
+  {
+    p++;
+  }
+
+  for (int d = digitValue(*p, inBase); d >= 0; d = digitValue(*p, inBase))
+  {
+    value = value * inBase + d;
+    digits++;
+    p++;
+  }
+
+  if (digits == 0)
+    return false; // nothing numeric here, leave ioText where it was
+
+  *outValue = (int)(negative ? -value : value);
+  *ioText = p;
+  return true;
+}
+
+int TextCommand::parseNumbers(const char *inText, int *outValues, int inMax, int inBase)
+{
+  int count = 0;
+
+  while (count < inMax && parseNumber(&inText, inBase, &outValues[count]))
+    count++;
+
+  return count;
+}
+
 void TextCommand::process()
 {
   char c;

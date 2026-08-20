@@ -487,17 +487,19 @@ void DCCpp::setTurnout(char *c)
     // declare a turnout has no meaning here and is rejected rather than
     // silently throwing a turnout: with the previous parser it was read as
     // <T ID STATE> with STATE = ADDRESS, which fired the turnout.
-    int address, state, extra;
-
     // Exactly two arguments are expected. Reading a third one lets us tell a
-    // definition apart from a throw order, and strtol() could not: it returns
-    // 0 for an empty string just as it does for "0", so a bare <T> used to
-    // emit a real accessory packet on address 0.
-    if (sscanf(c, "%d %d %d", &address, &state, &extra) != 2)
+    // definition apart from a throw order, and a bare <T> from a valid one:
+    // the parser reports how many numbers it actually found.
+    int args[3];
+
+    if (TextCommand::parseNumbers(c, args, 3) != 2)
     {
         DCCPP_INTERFACE.println("<X>");
         return;
     }
+
+    int address = args[0];
+    int state = args[1];
 
     if (address < 1 || address > 2044)
     {
@@ -508,5 +510,7 @@ void DCCpp::setTurnout(char *c)
     int linear = address + 3;
 
     DCCpp::mainRegs.setAccessory((linear >> 2), (linear & 3), (state > 0));
-    DCCPP_INTERFACE.println("<H " + String(address) + ((state > 0) ? " 1>" : " 0>"));
+    DCCPP_INTERFACE.print("<H ");
+    DCCPP_INTERFACE.print(address);
+    DCCPP_INTERFACE.println((state > 0) ? " 1>" : " 0>");
 }

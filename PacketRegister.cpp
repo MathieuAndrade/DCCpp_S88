@@ -36,7 +36,6 @@ RegisterList::RegisterList(int maxNumRegs)
   regMap = (Register **)calloc((maxNumRegs + 1), sizeof(Register *));
   speedTable = (int *)calloc((maxNumRegs + 1), sizeof(int *));
   addrTable = (int *)calloc((maxNumRegs + 1), sizeof(int *));
-  answerString.reserve(64);
   currentReg = reg;
   regMap[0] = reg;
   maxLoadedReg = reg;
@@ -55,6 +54,10 @@ RegisterList::RegisterList(int maxNumRegs)
 // is still part of the signature and passed by most call sites.
 void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int) volatile
 {
+  // A negative remainder would index backwards out of regMap: <M -1 3F 7F>
+  // reaches here straight from the command line.
+  if (nReg < 0)
+    nReg = 0;
   nReg = nReg % ((maxNumRegs + 1)); // force nReg to be between 0 and maxNumRegs, inclusive
 
   while (nextReg != NULL)
@@ -168,8 +171,15 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 
   loadPacket(nReg, b, nB, 0, 1);
 
-  answerString = String("<T") + String(nReg) + String(" ") + String(cab) + String(" ") + String(tSpeed) + String(" ") + String(tDirection) + String(">");
-  DCCPP_INTERFACE.println((const String &)answerString);
+  DCCPP_INTERFACE.print("<T");
+  DCCPP_INTERFACE.print(nReg);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(cab);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(tSpeed);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(tDirection);
+  DCCPP_INTERFACE.println(">");
 
   // Keep the throttle state in sync so that <s> can report it and
   // stopAllThrottles() can actually stop the locomotives.
@@ -180,17 +190,14 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
 
 void RegisterList::setThrottle(char *s) volatile
 {
-  int nReg;
-  int cab;
-  int tSpeed;
-  int tDirection;
+  int a[4];
 
-  if (sscanf(s, "%d %d %d %d", &nReg, &cab, &tSpeed, &tDirection) != 4)
+  if (TextCommand::parseNumbers(s, a, 4) != 4)
   {
     return;
   }
 
-  this->setThrottle(nReg, cab, tSpeed, tDirection);
+  this->setThrottle(a[0], a[1], a[2], a[3]); // nReg, cab, tSpeed, tDirection
 } // RegisterList::setThrottle(string)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -215,8 +222,15 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
     b[nB++] = eByte;
   }
 
-  answerString = String("<F") + String(nReg) + String(" ") + String(cab) + String(" ") + String(fByte) + String(" ") + String(eByte) + String(">");
-  DCCPP_INTERFACE.println((const String &)answerString);
+  DCCPP_INTERFACE.print("<F");
+  DCCPP_INTERFACE.print(nReg);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(cab);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(fByte);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(eByte);
+  DCCPP_INTERFACE.println(">");
   /* NMRA DCC norm ask for two DCC packets instead of only one:
   "Command Stations that generate these packets, and which are not periodically refreshing these functions,
   must send at least two repetitions of these commands when any function state is changed."
@@ -227,20 +241,17 @@ void RegisterList::setFunction(int nReg, int cab, int fByte, int eByte) volatile
 
 void RegisterList::setFunction(char *s) volatile
 {
-  int cab;
-  int fByte, eByte;
-  int nParams;
+  int a[3];
+  int nParams = TextCommand::parseNumbers(s, a, 3);
 
-  nParams = sscanf(s, "%d %d %d", &cab, &fByte, &eByte);
   if (nParams < 2)
   {
     return;
   }
 
-  if (nParams == 2) // this is a request for functions FL,F1-F12
-    eByte = -1;
+  int eByte = (nParams == 2) ? -1 : a[2]; // two arguments is a request for functions FL,F1-F12
 
-  this->setFunction(0, cab, fByte, eByte); // TODO : nReg 0 is not valid !
+  this->setFunction(0, a[0], a[1], eByte); // TODO : nReg 0 is not valid !
 
 } // RegisterList::setFunction(string)
 
@@ -259,19 +270,23 @@ void RegisterList::setAccessory(int aAdd, int aNum, int activate) volatile
 
 void RegisterList::setAccessory(char *s) volatile
 {
-  int aAdd;     // the accessory address (0-511 = 9 bits)
-  int aNum;     // the accessory number within that address (0-3)
-  int activate; // flag indicated whether accessory should be activated (1) or deactivated (0) following NMRA recommended convention
+  int a[3]; // accessory address (0-511 = 9 bits), number within that address
+            // (0-3), and activate flag following NMRA recommended convention
 
-  if (sscanf(s, "%d %d %d", &aAdd, &aNum, &activate) != 3)
+  if (TextCommand::parseNumbers(s, a, 3) != 3)
   {
     return;
   }
 
-  this->setAccessory(aAdd, aNum, activate);
+  this->setAccessory(a[0], a[1], a[2]);
 
-  answerString = "<A " + String(aAdd) + " / " + String(aNum) + " : " + String(activate) + ">";
-  DCCPP_INTERFACE.println((const String &)answerString);
+  DCCPP_INTERFACE.print("<A ");
+  DCCPP_INTERFACE.print(a[0]);
+  DCCPP_INTERFACE.print(" / ");
+  DCCPP_INTERFACE.print(a[1]);
+  DCCPP_INTERFACE.print(" : ");
+  DCCPP_INTERFACE.print(a[2]);
+  DCCPP_INTERFACE.println(">");
 
 } // RegisterList::setAccessory(string)
 
@@ -291,19 +306,21 @@ void RegisterList::setExtendedAccessory(int aAdd, int val) volatile
 
 void RegisterList::setExtendedAccessory(char *s) volatile
 {
-  int aAdd; // the accessory address (1-2044 = 11 bits)
-  int val;  // the accessory value for that address (0-31) following NMRA recommended convention, truncated to a byte in the packet
-            // NOTE: must be an int, sscanf("%d") writes sizeof(int) bytes
+  int a[2]; // accessory address (1-2044 = 11 bits) and its value (0-31
+            // following NMRA recommended convention, truncated to a byte)
 
-  if (sscanf(s, "%d %d", &aAdd, &val) != 2)
+  if (TextCommand::parseNumbers(s, a, 2) != 2)
   {
     return;
   }
 
-  this->setExtendedAccessory(aAdd, val);
+  this->setExtendedAccessory(a[0], a[1]);
 
-  answerString = "<x " + String(aAdd) + " : " + String(val) + ">";
-  DCCPP_INTERFACE.println((const String &)answerString);
+  DCCPP_INTERFACE.print("<x ");
+  DCCPP_INTERFACE.print(a[0]);
+  DCCPP_INTERFACE.print(" : ");
+  DCCPP_INTERFACE.print(a[1]);
+  DCCPP_INTERFACE.println(">");
 
 } // RegisterList::setExtendedAccessory(string)
 
@@ -324,17 +341,50 @@ void RegisterList::writeTextPacket(int nReg, byte *b, int nBytes) volatile
 
 void RegisterList::writeTextPacket(char *s) volatile
 {
+  const char *p = s;
   int nReg;
   byte b[6];
-  int nBytes;
+  int nBytes = 0;
+  int value;
 
-  nBytes = sscanf(s, "%d %hhx %hhx %hhx %hhx %hhx", &nReg, b, b + 1, b + 2, b + 3, b + 4) - 1;
+  // The register number is decimal, the packet bytes that follow are
+  // hexadecimal, so they are read one at a time with the matching base. When
+  // the register number itself is not a number, nBytes is left at 0 and the
+  // packet is rejected below rather than reading the offending text as a
+  // hexadecimal byte.
+  if (TextCommand::parseNumber(&p, 10, &nReg))
+  {
+    while (nBytes < 5 && TextCommand::parseNumber(&p, 16, &value))
+    {
+      b[nBytes++] = (byte)value;
+    }
+  }
+  else
+  {
+    nReg = 0;
+  }
 
   this->writeTextPacket(nReg, b, nBytes);
 
 } // RegisterList::writeTextPacket(string)
 
 ///////////////////////////////////////////////////////////////////////////////
+
+// <r CALLBACK|CALLBACKSUB|CV VALUE>, the answer shared by the CV read and
+// write commands. Printed field by field: building it as a String cost a
+// kilobyte of flash in allocator and String code for a dozen characters.
+static void printCvAnswer(int callBack, int callBackSub, int cv, int value)
+{
+  DCCPP_INTERFACE.print("<r");
+  DCCPP_INTERFACE.print(callBack);
+  DCCPP_INTERFACE.print("|");
+  DCCPP_INTERFACE.print(callBackSub);
+  DCCPP_INTERFACE.print("|");
+  DCCPP_INTERFACE.print(cv);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(value);
+  DCCPP_INTERFACE.println(">");
+}
 
 int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile
 {
@@ -412,8 +462,7 @@ int RegisterList::readCVraw(int cv, int callBack, int callBackSub) volatile
   if (d == 0) // verify unsuccessful
     bValue = -1;
 
-  answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
-  DCCPP_INTERFACE.println((const String &)answerString);
+  printCvAnswer(callBack, callBackSub, cv + 1, bValue);
 
   return bValue;
 }
@@ -425,14 +474,14 @@ int RegisterList::readCV(int cv, int callBack, int callBackSub) volatile
 
 int RegisterList::readCV(char *s) volatile
 {
-  int cv, callBack, callBackSub;
+  int a[3]; // cv = 1-1024, callBack, callBackSub
 
-  if (sscanf(s, "%d %d %d", &cv, &callBack, &callBackSub) != 3) // cv = 1-1024
+  if (TextCommand::parseNumbers(s, a, 3) != 3)
   {
     return -1;
   }
 
-  return this->readCV(cv, callBack, callBackSub);
+  return this->readCV(a[0], a[1], a[2]);
 } // RegisterList::readCV(string)
 
 int RegisterList::readCVmain(int cv, int callBack, int callBackSub) volatile
@@ -443,14 +492,14 @@ int RegisterList::readCVmain(int cv, int callBack, int callBackSub) volatile
 
 int RegisterList::readCVmain(char *s) volatile
 {
-  int cv, callBack, callBackSub;
+  int a[3]; // cv = 1-1024, callBack, callBackSub
 
-  if (sscanf(s, "%d %d %d", &cv, &callBack, &callBackSub) != 3) // cv = 1-1024
+  if (TextCommand::parseNumbers(s, a, 3) != 3)
   {
     return -1;
   }
 
-  return this->readCVmain(cv, callBack, callBackSub);
+  return this->readCVmain(a[0], a[1], a[2]);
 } // RegisterList::readCVmain(string)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -499,20 +548,19 @@ void RegisterList::writeCVByte(int cv, int bValue, int callBack, int callBackSub
       bValue = -1;
   }
 
-  answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bValue) + String(">");
-  DCCPP_INTERFACE.println((const String &)answerString);
+  printCvAnswer(callBack, callBackSub, cv + 1, bValue);
 } // RegisterList::writeCVByte(ints)
 
 void RegisterList::writeCVByte(char *s) volatile
 {
-  int bValue, cv, callBack, callBackSub;
+  int a[4]; // cv = 1-1024, bValue, callBack, callBackSub
 
-  if (sscanf(s, "%d %d %d %d", &cv, &bValue, &callBack, &callBackSub) != 4) // cv = 1-1024
+  if (TextCommand::parseNumbers(s, a, 4) != 4)
   {
     return;
   }
 
-  this->writeCVByte(cv, bValue, callBack, callBackSub);
+  this->writeCVByte(a[0], a[1], a[2], a[3]);
 } // RegisterList::writeCVByte(string)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -563,20 +611,29 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
       bValue = -1;
   }
 
-  answerString = String("<r") + String(callBack) + String("|") + String(callBackSub) + String("|") + String(cv + 1) + String(" ") + String(bNum) + String(" ") + String(bValue) + String(">");
-  DCCPP_INTERFACE.println((const String &)answerString);
+  DCCPP_INTERFACE.print("<r");
+  DCCPP_INTERFACE.print(callBack);
+  DCCPP_INTERFACE.print("|");
+  DCCPP_INTERFACE.print(callBackSub);
+  DCCPP_INTERFACE.print("|");
+  DCCPP_INTERFACE.print(cv + 1);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(bNum);
+  DCCPP_INTERFACE.print(" ");
+  DCCPP_INTERFACE.print(bValue);
+  DCCPP_INTERFACE.println(">");
 } // RegisterList::writeCVBit(ints)
 
 void RegisterList::writeCVBit(char *s) volatile
 {
-  int bNum, bValue, cv, callBack, callBackSub;
+  int a[5]; // cv = 1-1024, bNum, bValue, callBack, callBackSub
 
-  if (sscanf(s, "%d %d %d %d %d", &cv, &bNum, &bValue, &callBack, &callBackSub) != 5) // cv = 1-1024
+  if (TextCommand::parseNumbers(s, a, 5) != 5)
   {
     return;
   }
 
-  this->writeCVBit(cv, bNum, bValue, callBack, callBackSub);
+  this->writeCVBit(a[0], a[1], a[2], a[3], a[4]);
 } // RegisterList::writeCVBit(string)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -602,16 +659,14 @@ void RegisterList::writeCVByteMain(int cab, int cv, int bValue) volatile
 
 void RegisterList::writeCVByteMain(char *s) volatile
 {
-  int cab;
-  int cv;
-  int bValue;
+  int a[3]; // cab, cv, bValue
 
-  if (sscanf(s, "%d %d %d", &cab, &cv, &bValue) != 3)
+  if (TextCommand::parseNumbers(s, a, 3) != 3)
   {
     return;
   }
 
-  this->writeCVByteMain(cab, cv, bValue);
+  this->writeCVByteMain(a[0], a[1], a[2]);
 } // RegisterList::writeCVByteMain(string)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -640,17 +695,14 @@ void RegisterList::writeCVBitMain(int cab, int cv, int bNum, int bValue) volatil
 
 void RegisterList::writeCVBitMain(char *s) volatile
 {
-  int cab;
-  int cv;
-  int bNum;
-  int bValue;
+  int a[4]; // cab, cv, bNum, bValue
 
-  if (sscanf(s, "%d %d %d %d", &cab, &cv, &bNum, &bValue) != 4)
+  if (TextCommand::parseNumbers(s, a, 4) != 4)
   {
     return;
   }
 
-  this->writeCVBitMain(cab, cv, bNum, bValue);
+  this->writeCVBitMain(a[0], a[1], a[2], a[3]);
 } // RegisterList::writeCVBitMain(string)
 
 ///////////////////////////////////////////////////////////////////////////////
