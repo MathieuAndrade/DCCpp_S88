@@ -10,7 +10,9 @@ void setup()
 
   // Power district setup
   pinMode(EmergencyStop, INPUT_PULLUP);
+#ifdef USE_CDE_BOOSTER
   pinMode(E_BoosterIn, INPUT);
+#endif
 
   // S88 setup
   pinMode(S88_LOAD_PS_PIN, OUTPUT);

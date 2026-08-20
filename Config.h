@@ -27,6 +27,11 @@ struct DCCppConfig
 };
 
 #define EmergencyStop A5
+
+/** Emergency stop input coming from a CDE style booster (ROCO and similar),
+low active on E_BoosterIn. Comment this line out when no CDE booster is wired:
+the input then floats and triggers random power cuts. */
+#define USE_CDE_BOOSTER
 #define E_BoosterIn A7
 
 // A0 reads current of "Main" power district

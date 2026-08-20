@@ -4,7 +4,10 @@
 
 long int CurrentMonitor::sampleTime = 0;
 
+#ifdef USE_CDE_BOOSTER
 long int eStopTimer = 0;
+boolean eStop_mem = false;
+#endif
 
 void CurrentMonitor::begin(int pin, const char *msg, float inSampleMax)
 {
@@ -24,7 +27,6 @@ boolean CurrentMonitor::checkTime()
     return (true);
 }
 
-boolean eStop_mem = false;
 void CurrentMonitor::check()
 {
     if (this->pin == UNDEFINED_PIN)
@@ -49,6 +51,7 @@ void CurrentMonitor::check()
         DCCPP_INTERFACE.println(analogRead(EmergencyStop));
     }
 
+#ifdef USE_CDE_BOOSTER
     boolean eStop = (analogRead(E_BoosterIn) < 550) ? true : false; // low active, for Booster CDE
 
     if (eStop)
@@ -86,26 +89,15 @@ void CurrentMonitor::check()
 
     eStop_mem = eStop;
 finished:
+#endif // USE_CDE_BOOSTER
 
-    // current overload and Programming Signal is on (or could have checked Main Signal, since both are always on or off together)
-    if (this->current > this->currentSampleMax && digitalRead(this->signalPin) == HIGH)
+    // Current overload. The power state must be part of the test, otherwise
+    // this fires again on every sample while the smoothed current decays,
+    // flooding the interface with <p0> and stop orders. signalPin is the
+    // local computed above: the member of the same name was never assigned,
+    // so it read as pin 0 (RX0) and the guard did not hold.
+    if (this->current > this->currentSampleMax && digitalRead(signalPin) == HIGH)
     {
-        // DCCpp::powerOff();
-        String origin;
-        switch (this->pin)
-        {
-        case 54:
-            origin = "Main";
-            break;
-        case 55:
-            origin = "Prog";
-            break;
-        case 56:
-            origin = "Ext";
-            break;
-        case 57:
-            origin = "Garage/dépot";
-            break;
-        }
+        DCCpp::powerOff();
     }
 }

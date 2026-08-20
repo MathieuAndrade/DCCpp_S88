@@ -22,7 +22,6 @@ struct CurrentMonitor
 {
   static long int sampleTime; /**< time elapsed since last measurement. This delay is common to all monitors. */
   int pin;                    /**< Attached pin.*/
-  int signalPin;              /**< signal pin.*/
   float currentSampleMax;     /**< Value of the maximum current accepted without problem.*/
   float current;              /**< Value of the last measured current.*/
   const char *msg;            /**< Message to send when excessive current is measured.*/
