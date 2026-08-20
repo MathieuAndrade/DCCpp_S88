@@ -58,7 +58,7 @@ public:
     /** Check if the given function had its activation flag changed when sent to the decoder last time.
     The allowed number goes from 0 to 28, maximum for DCC.
     @param inFunctionNumber	Number of the function to check.
-    @return True if the given function activation flag is different between activFlags and sentActiveFlags.
+    @return True if the given function activation flag is different between activeFlags and sentActiveFlags.
     */
     bool isActivationChanged(byte inFunctionNumber);
 };
