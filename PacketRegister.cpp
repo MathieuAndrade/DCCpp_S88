@@ -140,19 +140,39 @@ void RegisterList::setThrottle(int nReg, int cab, int tSpeed, int tDirection) vo
   // same machine but with a different register
   // This allows the different programs to synchronize
   // the registry number easily
-  for (int i = 0; i <= MAX_MAIN_REGISTERS; i++)
+  // The table searched below belongs to the main track, so this lookup only
+  // makes sense when this RegisterList *is* the main track one. Applying a
+  // main track register number to the (much shorter) programming track list
+  // would silently address the wrong register.
+  if (DCCpp::IsMainTrack(this))
   {
-    if (DCCpp::mainRegs.addrTable[i] == cab)
+    for (int i = 0; i <= MAX_MAIN_REGISTERS; i++)
     {
-      nReg = i;
-      break;
+      if (DCCpp::mainRegs.addrTable[i] == cab)
+      {
+        nReg = i;
+        break;
+      }
     }
   }
+
+  // speedTable and addrTable hold maxNumRegs + 1 entries, and nReg comes
+  // straight from the <t> command without any validation. Clamp it the same
+  // way loadPacket() does, but guard against a negative value first: the C
+  // remainder of a negative operand is negative, which would index backwards.
+  if (nReg < 0)
+    nReg = 0;
+  nReg = nReg % (maxNumRegs + 1);
 
   loadPacket(nReg, b, nB, 0, 1);
 
   answerString = String("<T") + String(nReg) + String(" ") + String(cab) + String(" ") + String(tSpeed) + String(" ") + String(tDirection) + String(">");
   DCCPP_INTERFACE.println((const String &)answerString);
+
+  // Keep the throttle state in sync so that <s> can report it and
+  // stopAllThrottles() can actually stop the locomotives.
+  speedTable[nReg] = tDirection == 1 ? tSpeed : -tSpeed;
+  addrTable[nReg] = cab;
 
 } // RegisterList::setThrottle(ints)
 
@@ -526,7 +546,7 @@ void RegisterList::writeCVBit(int cv, int bNum, int bValue, int callBack, int ca
     bitClear(bWrite[2], 4); // change instruction code from Write Bit to Verify Bit
 
     loadPacket(0, resetPacket, 2, 3); // NMRA recommends starting with 3 reset packets
-    loadPacket(0, bWrite, 3, 5);      // NMRA recommends 5 verfy packets
+    loadPacket(0, bWrite, 3, 5);      // NMRA recommends 5 verify packets
     loadPacket(0, resetPacket, 2, 1); // forces code to wait until all repeats of bRead are completed (and decoder begins to respond)
 
     for (int j = 0; j < ACK_SAMPLE_COUNT; j++)

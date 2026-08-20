@@ -22,11 +22,16 @@ void TextCommand::process()
       // end of new command
       parse(commandString);
     }
-    else if (strlen(commandString) < MAX_COMMAND_LENGTH)
+    else
     {
       // if commandString still has space, append character just read from serial line
       // otherwise, character is ignored (but continue to look for '<' or '>')
-      sprintf(commandString, "%s%c", commandString, c);
+      size_t len = strlen(commandString);
+      if (len < MAX_COMMAND_LENGTH)
+      {
+        commandString[len] = c;
+        commandString[len + 1] = '\0';
+      }
     }
   }
 }
