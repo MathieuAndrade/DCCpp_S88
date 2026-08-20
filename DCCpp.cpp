@@ -72,6 +72,7 @@ void DCCpp::loop()
 
     if (CurrentMonitor::checkTime())
     {
+        CurrentMonitor::checkSafetyInputs(); // station wide, once per pass
         mainMonitor.check();
         progMonitor.check();
     }
